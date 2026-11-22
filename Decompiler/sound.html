@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>声音设计 · 试听 — 反编译实验室</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topnav">
+    <a class="brand" href="index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="method.html">方法</a>
+      <a href="devices/">装置</a>
+      <a href="archive/">档案</a>
+      <a href="case.html">案例</a>
+      <a href="sound.html" class="on">声音</a>
+      <a href="about.html">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="index.html">实验室</a><s>/</s><b>声音设计</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">Sound design · 0 audio files</div>
+    <h1>先让你紧张，<br>再替<em>你做记忆锚定</em>。</h1>
+    <p class="lede">
+      这是老虎机在用的顺序，我们把它原封不动搬过来——只把触发它的行为，换成对你有利的那一个。
+      全部声音由 Web Audio 实时合成，整站音频体积 0KB。
+    </p>
+    <div class="meta-row">
+      <div class="m"><div class="k">Engine</div><div class="v">Oscillator + Noise + Filter</div></div>
+      <div class="m"><div class="k">Latency</div><div class="v">&lt; 20ms（无加载）</div></div>
+      <div class="m"><div class="k">Files</div><div class="v">0</div></div>
+    </div>
+  </section>
+
+  <div class="sec"><span class="no">01</span><h2>声音板：点一下听</h2><span class="hint">click to play</span></div>
+
+  <div class="board" id="board">
+    <button class="pad" data-s="tick"><b>TICK</b><span>倒计时 · 稀缺感</span></button>
+    <button class="pad" data-s="click"><b>CLICK</b><span>决策点被按下</span></button>
+    <button class="pad" data-s="thunk"><b>THUNK</b><span>街机键的机械手感</span></button>
+    <button class="pad" data-s="whoosh"><b>WHOOSH</b><span>抽取 / 刷新 / 转场</span></button>
+    <button class="pad" data-s="unlock"><b>UNLOCK</b><span>悬念解锁 · 空间还原</span></button>
+    <button class="pad" data-s="reward"><b>REWARD</b><span>徽章 / 凭证到手</span></button>
+    <button class="pad" data-s="fail"><b>FAIL</b><span>破戒 · 中途退出</span></button>
+    <button class="pad" data-s="dissolve"><b>DISSOLVE</b><span>噪点被擦掉</span></button>
+  </div>
+  <p class="muted" style="margin-top:12px">首次点击需要一次手势授权，浏览器不允许页面自动出声。</p>
+
+  <div class="sec"><span class="no">02</span><h2>映射表</h2><span class="hint">what plays when</span></div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>事件</th><th>声音</th><th>合成方式</th><th>用在哪</th></tr></thead>
+      <tbody>
+        <tr><td><b>倒计时</b></td><td><span class="mono">tick</span></td><td>方波 1500Hz，35ms</td><td>盲盒 / 悬念器 / 契约最后 5 秒</td></tr>
+        <tr><td><b>按下</b></td><td><span class="mono">click</span></td><td>方波 920Hz，50ms</td><td>所有按钮</td></tr>
+        <tr><td><b>实体键</b></td><td><span class="mono">thunk</span></td><td>正弦 150→62Hz + 噪声 900→260Hz</td><td>街机键</td></tr>
+        <tr><td><b>抽取</b></td><td><span class="mono">whoosh</span></td><td>带通噪声 420→1500Hz</td><td>盲盒 / 刷新 / 切装置</td></tr>
+        <tr><td><b>解锁</b></td><td><span class="mono">unlock</span></td><td>上滑正弦 220→900Hz + 高频噪声</td><td>悬念解锁 / 清理完成</td></tr>
+        <tr><td><b>奖励</b></td><td><span class="mono">reward</span></td><td>大三和弦琶音，稀有度决定音数</td><td>徽章 / 荣誉凭证</td></tr>
+        <tr><td><b>失败</b></td><td><span class="mono">fail</span></td><td>锯齿 120→52Hz + 低频噪声</td><td>破戒 / 中途退出</td></tr>
+        <tr><td><b>溶解</b></td><td><span class="mono">dissolve</span></td><td>噪声 2400→220Hz</td><td>清理器每一块</td></tr>
+        <tr><td><b>底噪</b></td><td><span class="mono">ambient</span></td><td>双振荡器 + 低通 + 0.07Hz LFO</td><td>每个装置一条，基频不同</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="no">03</span><h2>为什么是这套顺序</h2><span class="hint">the order is the point</span></div>
+
+  <div class="grid-2">
+    <div class="callout violet">
+      <span class="lb">老虎机的顺序</span>
+      拉杆 → 滚轮加速（紧张）→ 减速（悬念）→ 中奖音（释放）→ 筹码声（再投入）。
+      声音不是陪衬，它把一次 3 秒的赌博切成了四个情绪阶段。
+    </div>
+    <div class="callout">
+      <span class="lb">我们的顺序</span>
+      开始专注 → 滴答（紧张）→ 完成（释放）→ 和弦（锚定）。
+      同样是四段，但每一段的对象是你的行动，不是你的钱包。
+    </div>
+  </div>
+
+  <div class="sec"><span class="no">04</span><h2>几个实现细节</h2><span class="hint">why it doesn't sound cheap</span></div>
+
+  <div class="prose">
+    <ul>
+      <li><b>全部走包络。</b>10ms 起音、指数衰减，所以连点不会爆音。</li>
+      <li><b>主链路有压缩器。</b><code>master → compressor → destination</code>，动态不会因为叠加而失控。</li>
+      <li><b>噪声用带通扫频。</b>whoosh 和 dissolve 都是同一段白噪声，只是扫频方向相反——一个"来"，一个"去"。</li>
+      <li><b>底噪按装置换基频。</b>55 / 110 / 48 / 65 / 147 Hz，切装置时听觉上会"换房间"。</li>
+      <li><b>尊重系统设置。</b>开启「减少动态效果」时，位移和粒子关闭，声音保留。</li>
+    </ul>
+  </div>
+
+  <div class="pager">
+    <a href="case.html"><span class="k">← Prev</span><span class="n">案例 ClassPath</span></a>
+    <a class="right" href="about.html"><span class="k">Next →</span><span class="n">关于与边界</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">THE DECOMPILER · SOUND<br>Web Audio · 0 音频文件</div>
+    <div class="f" style="text-align:right"><a href="index.html">返回实验室</a></div>
+  </footer>
+</div>
+
+<script>
+const AK = {
+  ctx:null, master:null, buf:null,
+  boot(){
+    if(this.ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AC();
+    const comp = this.ctx.createDynamicsCompressor();
+    comp.threshold.value = -20; comp.ratio.value = 5;
+    this.master = this.ctx.createGain(); this.master.gain.value = .7;
+    this.master.connect(comp); comp.connect(this.ctx.destination);
+    const len = Math.floor(this.ctx.sampleRate * 2);
+    this.buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const d = this.buf.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = Math.random()*2-1;
+  },
+  resume(){ if(this.ctx && this.ctx.state === "suspended") this.ctx.resume(); },
+  tone(o){
+    const t = this.ctx.currentTime + (o.when||0), dur = o.dur||.15;
+    const osc = this.ctx.createOscillator(); osc.type = o.type||"sine";
+    osc.frequency.setValueAtTime(o.f, t);
+    if(o.to) osc.frequency.exponentialRampToValueAtTime(Math.max(24,o.to), t+dur);
+    const g = this.ctx.createGain(); const peak = o.gain==null?.14:o.gain;
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    osc.connect(g); g.connect(this.master); osc.start(t); osc.stop(t+dur+.04);
+  },
+  noise(o){
+    const t = this.ctx.currentTime + (o.when||0), dur = o.dur||.3;
+    const src = this.ctx.createBufferSource(); src.buffer = this.buf; src.loop = true;
+    const bp = this.ctx.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = o.q||1;
+    bp.frequency.setValueAtTime(o.f||800,t);
+    if(o.to) bp.frequency.exponentialRampToValueAtTime(o.to, t+dur);
+    const g = this.ctx.createGain(); const peak = o.gain==null?.1:o.gain;
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+.025);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    src.connect(bp); bp.connect(g); g.connect(this.master); src.start(t); src.stop(t+dur+.05);
+  },
+  play(name){
+    this.boot(); this.resume();
+    if(name==="tick") this.tone({f:1500,type:"square",dur:.035,gain:.035});
+    if(name==="click") this.tone({f:920,type:"square",dur:.05,gain:.05});
+    if(name==="thunk"){ this.tone({f:150,to:62,dur:.17,gain:.2}); this.noise({dur:.09,gain:.13,f:900,to:260,q:1.5}); }
+    if(name==="whoosh") this.noise({dur:.34,gain:.11,f:420,to:1500,q:1.3});
+    if(name==="unlock"){ this.tone({f:220,to:900,dur:.5,gain:.09}); this.tone({f:330,to:1340,dur:.5,gain:.05,when:.05}); this.noise({dur:.5,gain:.05,f:2600,q:.8}); }
+    if(name==="reward"){ [523.25,659.25,783.99,987.77,1174.66].forEach((f,i)=>this.tone({f,dur:.55,gain:.1,when:i*.075,type:"triangle"})); this.noise({dur:.6,gain:.04,f:3200,q:.7}); }
+    if(name==="fail"){ this.tone({f:120,to:52,dur:.6,gain:.16,type:"sawtooth"}); this.noise({dur:.45,gain:.1,f:320,to:80,q:.7}); }
+    if(name==="dissolve") this.noise({dur:.45,gain:.1,f:2400,to:220,q:.9});
+  }
+};
+document.getElementById("board").addEventListener("click", e=>{
+  const p = e.target.closest(".pad"); if(!p) return;
+  AK.play(p.dataset.s);
+  p.animate([{transform:"scale(.97)"},{transform:"scale(1)"}],{duration:140});
+});
+</script>
+</body>
+</html>

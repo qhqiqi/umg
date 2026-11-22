@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A-02 盲盒 / 抽卡 · 逆向档案 — 反编译实验室</title>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="topnav">
+    <a class="brand" href="../index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="../method.html">方法</a><a href="../devices/">装置</a><a href="./" class="on">档案</a>
+      <a href="../case.html">案例</a><a href="../sound.html">声音</a><a href="../about.html">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="../index.html">实验室</a><s>/</s><a href="./">档案</a><s>/</s><b>A-02 盲盒 / 抽卡</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">A-02 · Brief dossier</div>
+    <h1>为"可能"付费，<br>为<em>确定性</em>上瘾。</h1>
+    <p class="lede">斯金纳箱的教科书形态。它把"想要"和"得到"拆成两件事，中间塞进一台老虎机。</p>
+    <div class="meta-row">
+      <div class="m"><div class="k">Status</div><div class="v">已迁移 → 行动盲盒</div></div>
+      <div class="m"><div class="k">Mechanism</div><div class="v">可变比率强化</div></div>
+    </div>
+  </section>
+
+  <div class="sec"><span class="no">01</span><h2>机制解剖</h2><span class="hint">variable ratio</span></div>
+  <div class="prose">
+    <p>
+      可变比率强化的核心不是"奖励"，是<b>奖励的不可预测</b>。固定奖励会让多巴胺在获得时释放；
+      不可预测的奖励让多巴胺在<b>预期</b>时释放——而预期可以无限延长，获得只有一瞬间。
+    </p>
+    <p>
+      所以抽卡产品卖的不是卡，是<b>抽之前的那三秒</b>。保底机制看起来是"良心"，其实是把随机性
+      校准到一个可忍受的区间：既保证你不会彻底放弃，又保证你永远不会满足。
+    </p>
+  </div>
+
+  <div class="callout red">
+    <span class="lb">被删除的决策点</span>
+    <b>"要不要开始"。</b>你不再决定今天要不要投入，只决定"再抽一次"。抽卡把"开始"变成了一次点击，
+    把"停止"变成了一件需要意志力的事。
+  </div>
+
+  <div class="sec"><span class="no">02</span><h2>迁移测试</h2><span class="hint">can this be redirected?</span></div>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>问题</th><th>判断</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>随机性可以保留吗</td><td><b>可以</b></td><td>随机性本身不邪恶，关键是它随机的是"外观"还是"能否获得"</td></tr>
+        <tr><td>支付货币可以替换吗</td><td><b>可以</b></td><td>钱 → 一段真实的身体行动，且行动本身对用户有利</td></tr>
+        <tr><td>会不会变成新的赌博</td><td><b>不会</b></td><td>只要奖励 100% 获得、随机只影响稀有度，回路就从"赌"变成"攒"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <span class="lb">Our decision</span>
+    <b>迁了，而且改了伦理边界。</b>行动盲盒里，付出一小时就一定有回报，随机的只是徽章长什么样——
+    这一点和老虎机完全相反：<b>它是确定性的努力，换不确定的惊喜</b>。
+  </div>
+
+  <div class="pager">
+    <a href="xiaohongshu.html"><span class="k">← Prev</span><span class="n">A-01 小红书</span></a>
+    <a class="right" href="douyin.html"><span class="k">Next →</span><span class="n">A-03 抖音</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">A-02 · GACHA<br>可变比率强化</div>
+    <div class="f" style="text-align:right"><a href="./">全部档案</a></div>
+  </footer>
+</div>
+</body>
+</html>

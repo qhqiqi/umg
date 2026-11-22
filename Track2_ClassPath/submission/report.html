@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>ClassPath 课路 · 逆向设计报告</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 16mm; }
+* { box-sizing: border-box; }
+body{
+  font-family:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  font-size:10.4pt; line-height:1.78; color:#16181D; margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+h1{font-size:23pt;line-height:1.25;letter-spacing:-.02em;margin:0 0 2mm;}
+h2{font-size:14pt;margin:9mm 0 3mm;padding-bottom:2mm;border-bottom:1.2px solid #16181D;letter-spacing:-.01em;page-break-after:avoid;}
+h3{font-size:11.6pt;margin:6mm 0 2mm;color:#1B3FD8;page-break-after:avoid;}
+h4{font-size:10.6pt;margin:4mm 0 1.5mm;page-break-after:avoid;}
+p{margin:0 0 2.6mm;}
+strong{font-weight:700;}
+em{font-style:normal;color:#1B3FD8;font-weight:600;}
+code{font-family:"Cascadia Mono",Consolas,monospace;font-size:9pt;background:#F2EFE7;padding:.4mm 1.2mm;border-radius:1mm;}
+pre{background:#0E1015;color:#EDEAE2;padding:4mm 5mm;border-radius:2mm;overflow:hidden;page-break-inside:avoid;}
+pre code{background:none;color:inherit;font-size:8.8pt;line-height:1.75;padding:0;}
+blockquote{margin:3mm 0;padding:3mm 4mm;border-left:2.4px solid #1B3FD8;background:#F4F6FF;color:#2C323D;
+  font-size:10.2pt;page-break-inside:avoid;}
+blockquote strong{color:#111;}
+table{width:100%;border-collapse:collapse;margin:3mm 0 4mm;font-size:9pt;page-break-inside:avoid;}
+th{background:#16181D;color:#F6F3EC;font-weight:600;text-align:left;padding:1.8mm 2.2mm;font-size:8.8pt;letter-spacing:.04em;}
+td{padding:1.7mm 2.2mm;border-bottom:.5px solid #DCD6C8;vertical-align:top;}
+tr:nth-child(even) td{background:#FAF8F2;}
+ul,ol{margin:0 0 3mm;padding-left:5mm;}
+li{margin:0 0 1.2mm;}
+hr{border:none;border-top:.6px solid #D8D2C4;margin:6mm 0;}
+a{color:#1B3FD8;text-decoration:none;}
+h1 + h2{margin-top:6mm;}
+</style></head><body>
+<h1>ClassPath · 课路</h1>
+<h2>赛道二：Reverse Product Innovation —— 逆向设计报告</h2>
+<blockquote><strong>一句话</strong>：我们把一个"让人忍不住打开"的产品拆到价值逻辑层，得到一条可迁移的公式，<br>再用这条公式做了一个新东西——<strong>不评课，只交路径</strong>。</blockquote>
+<p>版本 v1.0 ｜ 2026-11 ｜ 参赛作品：ClassPath（课路）</p>
+<hr>
+<h2>0. 摘要</h2>
+<table>
+<thead><tr><th>项目</th><th>内容</th></tr></thead><tbody>
+<tr><td>逆向对象</td><td>小红书</td></tr>
+<tr><td>逆向结论</td><td>它表面上卖内容，实质上卖的是<strong>"决定的代理权"</strong></td></tr>
+<tr><td>价值公式</td><td><code>V = (E × S × U) / C</code></td></tr>
+<tr><td>迁移领域</td><td>高校选课决策</td></tr>
+<tr><td>原创原型</td><td>ClassPath：以<strong>"路径（Path）"</strong>而非"课程（Course）"为最小信息单元</td></tr>
+<tr><td>关键取舍</td><td>继承它的<strong>价值逻辑</strong>，拒绝它的<strong>注意力逻辑</strong></td></tr>
+</tbody></table>
+<hr>
+<h2>1. 选对象：为什么是它</h2>
+<p>不是所有"很火的产品"都适合做逆向对象。我们用三条标准筛：</p>
+<table>
+<thead><tr><th>标准</th><th>含义</th><th>反例</th></tr></thead><tbody>
+<tr><td><strong>行为上"忍不住"</strong></td><td>用户在没有通知、没有任务的情况下主动、无目的地反复打开</td><td>微信（是基础设施，不是"忍不住"）</td></tr>
+<tr><td><strong>结构上"反常识"</strong></td><td>它成功的原因和它自己宣称的定位不一致</td><td>淘宝（宣称是商城，行为也确实是购物）</td></tr>
+<tr><td><strong>逻辑上"可迁移"</strong></td><td>核心机制不依赖内容品类，可以搬到别的领域</td><td>王者荣耀（机制是竞技匹配，迁移价值低）</td></tr>
+</tbody></table>
+<p><strong>入选：小红书。</strong> 它宣称自己是"生活方式社区"，但用户真正的行为是——<strong>在做一个还没做完的决定</strong>。</p>
+<p><strong>被淘汰的候选，以及淘汰理由：</strong></p>
+<ul>
+<li><strong>抖音</strong>：机制是"刺激密度"，迁移时极易滑向成瘾设计，伦理成本高，且已被过度复制。</li>
+<li><strong>多邻国</strong>：机制是"损失厌恶 + 连续记录"，被大量教育产品抄烂，逆向价值低。</li>
+<li><strong>拼多多</strong>：机制是"社交关系链套利"，迁移到校园场景有合规与伦理风险。</li>
+<li><strong>闲鱼</strong>：机制是"非标品 + 故事 + 议价"，观察有价值，但它的"忍不住"依赖库存的偶然性，难以稳定设计。</li>
+</ul>
+<hr>
+<h2>2. 观察：五个"忍不住"的瞬间</h2>
+<p>以下是我们对自身与周围同学使用行为的切片记录（行为描述，非功能清单）：</p>
+<ol>
+<li><strong>决定悬空时打开。</strong> 午饭吃什么、买哪款耳机、周末去哪、暑假怎么安排——不是"我想看内容"，是"我有一个还没做的决定"。</li>
+<li><strong>30 秒内要一个结论，而不是一篇文章。</strong> 首图就是结论，标题就是问题（"200 块以内送男朋友"）。用户在接受信息前，先接受了一个"判断"。</li>
+<li><strong>只信"和我像的人"。</strong> 同龄、同预算、同城市、同肤质、同基础。官方说明和专业测评反而排在后面——<strong>权威在这里是失效的</strong>。</li>
+<li><strong>收藏 ≠ 喜欢，收藏 = 这个决定我还没做完。</strong> 收藏夹是一个"待办清单"，不是"喜欢清单"。</li>
+<li><strong>搜索框里是问题，不是关键词。</strong> 用户输入的是一句处境（"大一 想保研 但数学不好"）。</li>
+</ol>
+<p>这五条指向同一个结论：<strong>用户来这里不是为了"看"，是为了"不用自己判断"。</strong></p>
+<hr>
+<h2>3. 拆解：四层机制</h2>
+<table>
+<thead><tr><th>层级</th><th>现象</th><th>机制</th><th>被满足的需求</th></tr></thead><tbody>
+<tr><td><strong>功能层</strong></td><td>图文笔记、双列瀑布流、搜索、收藏、话题</td><td>内容供给 + 检索 + 归集</td><td>找到别人的经验</td></tr>
+<tr><td><strong>交互层</strong></td><td>首图即结论、标题即问题、双列同屏比较、收藏一键</td><td>把"比较成本"和"承诺成本"同时压到接近零</td><td>快速收敛选项</td></tr>
+<tr><td><strong>心理层</strong></td><td>决策外包、身份相似信任、收藏夹=心理账户、FOMO</td><td>把"我要判断"换成"我只要认领一个已经成立的判断"</td><td>降低判断焦虑</td></tr>
+<tr><td><strong>价值层</strong></td><td>——</td><td><strong>用"同类人的可执行经验"替代"权威的抽象标准"</strong></td><td>把决策变成"检索 + 照做"</td></tr>
+</tbody></table>
+<p><strong>最重要的那条反常识结论：</strong></p>
+<blockquote>小红书不是内容产品，是<strong>决策产品</strong>。<br>它的商品不是"笔记"，是"<strong>代理权</strong>"——替用户完成那次判断。</blockquote>
+<hr>
+<h2>4. 价值公式</h2>
+<p>把四层机制压成一个可计算的式子：</p>
+<pre><code>V = (E × S × U) / C
+
+E = 经验的可执行度   —— 能不能直接照做（价格、型号、店名、步骤、避雷）
+S = 处境相似度       —— 同龄 / 同预算 / 同基础 / 同场景
+U = 决策紧迫度       —— 这个决定有多快必须做
+C = 检索与验证成本   —— 找到它、确认它、比较它要花多少力气</code></pre>
+<p>乘法结构是关键：<strong>任何一项为零，整个价值归零。</strong></p>
+<p>由此得到三条<strong>设计律</strong>，它们是后面所有设计决策的依据：</p>
+<table>
+<thead><tr><th>设计律</th><th>内容</th><th>反面（做了就退化）</th></tr></thead><tbody>
+<tr><td><strong>律 1：交付"可执行单元"，不交付"评价"</strong></td><td>用户要的是"价格 89 元 / 店在二楼 / 别点招牌"，不是"这家不错"</td><td>只写"好用""避雷"，用户还得再判断一次</td></tr>
+<tr><td><strong>律 2：信任来自相似，不来自权威</strong></td><td>必须携带"处境标签"，并保留瑕疵感</td><td>变成专家榜单，S 崩塌，退化为内容消费</td></tr>
+<tr><td><strong>律 3：给一个近零成本的"承诺动作"</strong></td><td>收藏的成本≈0，却把内容搬进了"我的计划"</td><td>只让浏览、不产生计划，用户下次不会回来</td></tr>
+</tbody></table>
+<p><strong>一条用来验收迁移方案的反面判据：</strong></p>
+<ul>
+<li>若 <code>E</code> 高、<code>S</code> 低 → 变成教程，看完就走。</li>
+<li>若 <code>S</code> 高、<code>E</code> 低 → 变成吐槽社区，情绪消费完就散。</li>
+<li>只有 <code>E</code> 与 <code>S</code> 同时高，才是可迁移的那部分。</li>
+</ul>
+<hr>
+<h2>5. 迁移：用五个判据找同构问题</h2>
+<table>
+<thead><tr><th>判据</th><th>说明</th></tr></thead><tbody>
+<tr><td>① 高紧迫</td><td>决定必须在有限时间内做出</td></tr>
+<tr><td>② 非标信息</td><td>答案因人而异，没有统一标准</td></tr>
+<tr><td>③ 官方信息干燥</td><td>官方只给字段，不给判断</td></tr>
+<tr><td>④ 同类经验海量但不可检索</td><td>经验存在，但散落在群聊、口碑、过期文档里</td></tr>
+<tr><td>⑤ 可被"照做"</td><td>结论能被直接执行，而不是只能被理解</td></tr>
+</tbody></table>
+<p>评分（1–5，满分 25）：</p>
+<table>
+<thead><tr><th>候选领域</th><th>①</th><th>②</th><th>③</th><th>④</th><th>⑤</th><th>合计</th></tr></thead><tbody>
+<tr><td>校园二手交易</td><td>3</td><td>4</td><td>2</td><td>4</td><td>5</td><td>18</td></tr>
+<tr><td>就医挂号</td><td>5</td><td>5</td><td>4</td><td>3</td><td>3</td><td>20</td></tr>
+<tr><td>高考志愿填报</td><td>5</td><td>5</td><td>5</td><td>4</td><td>3</td><td>22</td></tr>
+<tr><td>健身 / 减脂计划</td><td>3</td><td>4</td><td>3</td><td>5</td><td>4</td><td>19</td></tr>
+<tr><td><strong>高校选课</strong></td><td><strong>4</strong></td><td><strong>5</strong></td><td><strong>5</strong></td><td><strong>4</strong></td><td><strong>5</strong></td><td><strong>23</strong></td></tr>
+</tbody></table>
+<p><strong>选课胜出</strong>，并且多一个别的候选没有的优势：<strong>我们自己就是用户</strong>，可以自举冷启动（第一批路径由团队成员自己写）。</p>
+<blockquote>高考志愿得分接近，但用户不可及、监管敏感，放弃。</blockquote>
+<hr>
+<h2>6. 从逆向到正向：ClassPath 的设计</h2>
+<h3>6.1 先看现有方案缺什么</h3>
+<table>
+<thead><tr><th>现有方案</th><th>给了什么</th><th>缺了什么</th></tr></thead><tbody>
+<tr><td>教务系统</td><td>课名、学分、教师、时间</td><td>零决策信息，等于一张"菜单"</td></tr>
+<tr><td>评课社区</td><td>单门课的评价与打分</td><td>评的是"单门课"，但学生的真实决策是"<strong>一组课的搭配 + 一个目标</strong>"</td></tr>
+<tr><td>群聊 / 学长文档</td><td>真实、细节多</td><td>不可检索、会过期、无法横向比较、人一走就断</td></tr>
+</tbody></table>
+<p><strong>缺口很明确：没有任何人对"组合"负责。</strong> 所有人都在评价一门课，没人对"你为什么这样排这四门课"负责。</p>
+<h3>6.2 把对象换掉：Course → Path</h3>
+<p>这是本作品唯一的、也是最重要的创新点——<strong>不是界面创新，是对象创新</strong>：</p>
+<pre><code>Path = 一个目标
+     + 4~6 门课（含可执行字段）
+     + 时间预算（周学时）
+     + 一句"为什么这样排"
+     + 一个可验证结果（绩点区间 / 拿到什么 / 踩了什么坑）
+     + 一句"这条路径不适合谁"</code></pre>
+<p>评价一门课，回答的是"这门课好不好"。 分享一条路径，回答的是"<strong>你上个学期到底是怎么过的，我能不能照着过一遍</strong>"。</p>
+<h3>6.3 三条设计律的落地</h3>
+<table>
+<thead><tr><th>设计律</th><th>在产品里的具体形态</th></tr></thead><tbody>
+<tr><td><strong>律 1：可执行单元</strong></td><td>每门课强制携带：学分、周学时、考核形态（考试/大作业/实验）、是否点名、是否早八、给分区间、工具与教材、组队要求</td></tr>
+<tr><td><strong>律 2：相似优先</strong></td><td>每条路径强制标注<strong>处境标签</strong>：专业、年级、目标、每周可投入时长、绩点段位。列表按<strong>相似度</strong>排序，不按热度排序</td></tr>
+<tr><td><strong>律 3：零成本承诺</strong></td><td>"收藏路径" → 自动生成<strong>"我的课表草案"</strong>，含时间冲突检测与周学时预算；"照抄"把浏览直接变成计划</td></tr>
+</tbody></table>
+<h3>6.4 三个"比原产品更克制"的决定</h3>
+<p>逆向设计最容易犯的错，是把对方的<strong>成瘾机制</strong>一起抄过来。我们做了三条反向选择：</p>
+<ol>
+<li><strong>不做无限流。</strong> 入口是"你的目标"，不是"猜你喜欢"。路径有尽头，匹配完就该关掉。</li>
+<li><strong>显示负向证据。</strong> 每条路径都有一句"<strong>这条路径不适合谁</strong>"。原产品永远不会告诉你"你不该买"。</li>
+<li><strong>内置预算护栏。</strong> 周学时超过你声明的可投入时长，直接红牌；早八 ≥ 3 门、学分低于毕业线，都会告警。</li>
+</ol>
+<blockquote>一句话总结取舍：<strong>继承它的价值逻辑（E×S/U），拒绝它的注意力逻辑（无限流、FOMO）。</strong></blockquote>
+<h3>6.5 数据飞轮</h3>
+<pre><code>路径发布 → 被收藏 → 被照抄 → 学期末回填真实结果 → 路径可信度被校准 → 更靠前</code></pre>
+<p>只有<strong>被照抄过且完成回填</strong>的路径，才能进入首页。这让"可信度"来自验证，而不是来自流量。</p>
+<hr>
+<h2>7. 原型</h2>
+<h3>7.1 技术</h3>
+<table>
+<thead><tr><th>项</th><th>选择</th><th>理由</th></tr></thead><tbody>
+<tr><td>形态</td><td>单文件 Web（<code>prototype/index.html</code>）</td><td>零依赖、零构建，双击即可演示，评委现场能点</td></tr>
+<tr><td>布局</td><td>移动优先，桌面上以手机框呈现</td><td>还原真实使用场景</td></tr>
+<tr><td>数据</td><td>本地 6 条示例路径（示意数据，非真实院校数据）</td><td>可离线演示</td></tr>
+<tr><td>交互</td><td>原生 JS 状态机，五个视图</td><td>无框架依赖，加载 &lt; 100ms</td></tr>
+</tbody></table>
+<h3>7.2 功能清单</h3>
+<table>
+<thead><tr><th>#</th><th>功能</th><th>对应设计律</th></tr></thead><tbody>
+<tr><td>F1</td><td>目标选择（保研 / 就业 / 科研 / 转专业 / 稳绩点 / 实习）</td><td>入口即目标，不做推荐流</td></tr>
+<tr><td>F2</td><td>可投入时长滑杆（12–28 h/周）</td><td>让 <code>S</code>（处境相似度）可计算</td></tr>
+<tr><td>F3</td><td>路径卡按<strong>相似度</strong>排序，显示匹配理由</td><td>律 2</td></tr>
+<tr><td>F4</td><td>路径详情：为什么这样排 + 逐门课可执行字段 + 避雷 + 不适合谁</td><td>律 1</td></tr>
+<tr><td>F5</td><td>收藏 / 照抄 → 生成"我的课表草案"</td><td>律 3</td></tr>
+<tr><td>F6</td><td>草案页：学分统计、周学时预算、<strong>时间冲突检测</strong>、早八计数告警</td><td>预算护栏</td></tr>
+<tr><td>F7</td><td>"方法"抽屉：把逆向设计的公式与三条设计律嵌进产品</td><td>让推理过程可见</td></tr>
+<tr><td>F8</td><td>学期末回填入口（占位，期末周开放）</td><td>数据飞轮的入口</td></tr>
+</tbody></table>
+<h3>7.3 主流程（5 步）</h3>
+<pre><code>选目标 → 调时间预算 → 看匹配路径 → 打开一条路径（读"为什么"）→ 收藏/照抄 → 课表草案与告警</code></pre>
+<h3>7.4 60 秒演示脚本</h3>
+<table>
+<thead><tr><th>时间</th><th>动作</th><th>要说的话</th></tr></thead><tbody>
+<tr><td>0–8s</td><td>打开首屏</td><td>"选课的时候，教务系统只告诉你课名和学分，但你要决定的是：这学期怎么过。"</td></tr>
+<tr><td>8–18s</td><td>选"保研冲绩点"，滑杆拉到 20h</td><td>"你只回答两个问题：想要什么，能投入多少。"</td></tr>
+<tr><td>18–30s</td><td>看路径列表</td><td>"出来的是<strong>路径</strong>，不是课程评价。每条都标了作者的处境，和我们像不像，一眼就能看出来。"</td></tr>
+<tr><td>30–45s</td><td>打开"保研稳绩点"</td><td>"它不告诉你这门课好不好，它告诉你：为什么这四门放在一起、哪门会拖垮你、这条路径<strong>不适合谁</strong>。"</td></tr>
+<tr><td>45–60s</td><td>点照抄 → 草案页红牌</td><td>"照抄之后它直接变成课表，并且告诉你：周一有 1 处时间冲突，周学时还超了 1 小时。——<strong>这就把浏览变成了一个真的决定。</strong>"</td></tr>
+</tbody></table>
+<hr>
+<h2>8. 评估</h2>
+<h3>8.1 与现有方案对比</h3>
+<table>
+<thead><tr><th>维度</th><th>教务系统</th><th>评课社区</th><th>群聊/文档</th><th><strong>ClassPath</strong></th></tr></thead><tbody>
+<tr><td>信息单元</td><td>课程字段</td><td>单课评价</td><td>零散经验</td><td><strong>路径（组合 + 目标）</strong></td></tr>
+<tr><td>是否可执行</td><td>否</td><td>部分</td><td>是但不可检索</td><td><strong>是，字段化</strong></td></tr>
+<tr><td>相似度匹配</td><td>无</td><td>弱</td><td>靠人情</td><td><strong>显式标签 + 排序</strong></td></tr>
+<tr><td>时间成本可视化</td><td>无</td><td>无</td><td>无</td><td><strong>有，含护栏告警</strong></td></tr>
+<tr><td>负向证据</td><td>无</td><td>少量</td><td>有但不可靠</td><td><strong>强制"不适合谁"</strong></td></tr>
+<tr><td>可信度来源</td><td>权威</td><td>热度</td><td>熟人</td><td><strong>被照抄 + 回填验证</strong></td></tr>
+</tbody></table>
+<h3>8.2 成功指标</h3>
+<table>
+<thead><tr><th>指标</th><th>定义</th><th>目标</th></tr></thead><tbody>
+<tr><td>照抄率</td><td>打开路径 → 生成课表草案</td><td>≥ 25%</td></tr>
+<tr><td>收藏→草案转化</td><td>收藏 → 照抄</td><td>≥ 40%</td></tr>
+<tr><td>回填率</td><td>学期末完成结果回填的路径占比</td><td>≥ 30%</td></tr>
+<tr><td>护栏拦截</td><td>被预算/冲突告警拦下的草案数</td><td>观察项（越高说明护栏越有用）</td></tr>
+<tr><td>负向证据阅读率</td><td>展开"不适合谁"的比例</td><td>≥ 60%</td></tr>
+</tbody></table>
+<h3>8.3 风险与对策</h3>
+<table>
+<thead><tr><th>风险</th><th>说明</th><th>对策</th></tr></thead><tbody>
+<tr><td>冷启动</td><td>没有路径就没有用户</td><td>团队自举首批 30 条；按"目标"而非"课程"组织，少量数据也能覆盖主要需求</td></tr>
+<tr><td>真实性</td><td>作者夸大给分</td><td>强制回填 + "被照抄后回填"加权；显示样本量而不是单一评分</td></tr>
+<tr><td>路径同质化</td><td>所有人都抄同一条</td><td>按处境标签分组排序；对"高照抄低回填"的路径降权</td></tr>
+<tr><td>隐私</td><td>课表与绩点敏感</td><td>只存聚合区间（如 85–92），不存精确分数；作者可匿名</td></tr>
+<tr><td>被当成"抄作业"工具</td><td>削弱自主判断</td><td>每条路径必须写"为什么"，并显示"不适合谁"</td></tr>
+</tbody></table>
+<hr>
+<h2>9. 交付物清单</h2>
+<table>
+<thead><tr><th>文件</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>01_逆向设计报告.md</code> / <code>.pdf</code></td><td>本文档：逆向推理全过程</td></tr>
+<tr><td><code>prototype/index.html</code></td><td>可交互原型（双击打开）</td></tr>
+<tr><td><code>poster/poster.png</code></td><td>项目海报（提交用，A2 比例）</td></tr>
+<tr><td><code>poster/keyvisual.png</code></td><td>海报主视觉（由图像生成 API 产出）</td></tr>
+<tr><td><code>README.md</code></td><td>提交说明、运行方式、演示脚本</td></tr>
+<tr><td><code>submission/pitch.md</code></td><td>3 分钟路演稿</td></tr>
+</tbody></table>
+<hr>
+<h2>10. 诚实的边界</h2>
+<p>本报告中标注为"观察"的内容来自设计者的自省与周边同学的行为讨论，<strong>不是统计抽样结论</strong>； 示例路径中的课程、教师、分数均为<strong>虚构示意数据</strong>，用于演示交互，不代表任何真实院校。</p>
+<p>以下三条是<strong>假设</strong>，需要在真实用户中验证：</p>
+<ol>
+<li><strong>H1</strong>：学生在选课时，真正需要的是"组合方案"而非"单课评价"。（若否，Path 这个对象就立不住）</li>
+<li><strong>H2</strong>：处境标签的相似度排序，比热度排序更能提升照抄率。</li>
+<li><strong>H3</strong>：内置预算护栏不会显著降低使用意愿（即"劝退"不会劝退用户）。</li>
+</ol>
+<hr>
+<p>*ClassPath 课路 · 赛道二 · Reverse Product Innovation*</p>
+</body></html>

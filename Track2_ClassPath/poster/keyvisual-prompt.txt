@@ -1,0 +1,17 @@
+海报主视觉 · 图像生成提示词
+==============================
+
+模型：即梦 seedream_5.0_lite（t2i），2K，比例 2:3
+产出：keyvisual.png（原图，含平台水印）→ 裁掉底部水印 → keyvisual.jpg（用于 poster.html 的 .bgimg 图层）
+
+提示词（中文，可直接复用）：
+极简深色抽象背景，近黑墨蓝底色。细密的等高线状发光线条，冷蓝色，自画面左下方向右上方汇聚又分离，形成一条若隐若现的路径；细腻颗粒纸感，微弱光晕，大面积留白，编辑设计感，扁平矢量与噪点结合，克制、高级、暗调。无文字，无字母，无logo，无水印。
+
+Negative（若所用 API 支持）：
+text, letters, watermark, logo, people, faces, bright colors, cluttered, busy
+
+—— 换成 AMD API 时 ——
+1. 用同一段提示词调用 AMD 图像生成接口，尺寸建议 832×1216 或 1024×1536（2:3）。
+2. 保存为 poster/keyvisual.jpg（覆盖同名文件）。
+3. 重新渲染海报：见 README「技术说明 · 海报渲染」，或直接用 Chrome 打开 poster/poster.html 截图。
+4. 海报的其余部分（标题、公式、链条、三条律、手机截图）全部是 HTML/CSS，不受图片替换影响。

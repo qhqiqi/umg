@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>逆向档案库 — 反编译实验室</title>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topnav">
+    <a class="brand" href="../index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="../method.html">方法</a>
+      <a href="../devices/">装置</a>
+      <a href="./" class="on">档案</a>
+      <a href="../case.html">案例</a>
+      <a href="../sound.html">声音</a>
+      <a href="../about.html">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="../index.html">实验室</a><s>/</s><b>档案</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">Archive · 6 objects</div>
+    <h1>拆过的产品，<em>都留了档</em>。</h1>
+    <p class="lede">
+      每一份档案只回答四个问题：它靠什么机制留住人、删掉了哪个决策点、收的是哪种货币、
+      这套机制能迁到哪里。档案不是测评，是尸检报告。
+    </p>
+  </section>
+
+  <div class="chipset" id="f">
+    <button class="chip on" data-f="all">全部</button>
+    <button class="chip" data-f="深度">深度档案</button>
+    <button class="chip" data-f="简要">简要档案</button>
+  </div>
+
+  <div class="grid-2" id="list">
+
+    <a class="card" href="xiaohongshu.html" data-tag="深度">
+      <div class="no">A-01 · 深度</div>
+      <h3>小红书</h3>
+      <p>它卖的不是内容，是「决定的代理权」。四层拆解 + 可迁移公式，最后落成了 ClassPath。</p>
+      <div class="row"><span class="tag lime">已迁移</span><span class="tag">决策外包</span></div>
+      <span class="go">读档案 →</span>
+    </a>
+
+    <a class="card" href="gacha.html" data-tag="简要">
+      <div class="no">A-02 · 简要</div>
+      <h3>盲盒 / 抽卡</h3>
+      <p>斯金纳箱的教科书。可变比率强化把"想要"和"得到"拆成两件事，让人为"可能"付费。</p>
+      <div class="row"><span class="tag">可变比率</span></div>
+      <span class="go">读档案 →</span>
+    </a>
+
+    <a class="card" href="douyin.html" data-tag="简要">
+      <div class="no">A-03 · 简要</div>
+      <h3>抖音 / 短视频</h3>
+      <p>把"停止"这个决策点从物理世界里删掉了。下一条永远已经开始加载。</p>
+      <div class="row"><span class="tag">无限流</span></div>
+      <span class="go">读档案 →</span>
+    </a>
+
+    <a class="card" href="duolingo.html" data-tag="简要">
+      <div class="no">A-04 · 简要</div>
+      <h3>多邻国</h3>
+      <p>用连续记录制造损失厌恶，再用一只会失望的猫头鹰把"断签"变成社交代价。</p>
+      <div class="row"><span class="tag">连续记录</span></div>
+      <span class="go">读档案 →</span>
+    </a>
+
+    <a class="card" href="pinduoduo.html" data-tag="简要">
+      <div class="no">A-05 · 简要</div>
+      <h3>拼多多 · 砍一刀</h3>
+      <p>把获客成本转嫁给用户的关系链。倒计时 + 差一分，是纯粹的损失厌恶放大器。</p>
+      <div class="row"><span class="tag">关系链套利</span></div>
+      <span class="go">读档案 →</span>
+    </a>
+
+    <a class="card" href="xianyu.html" data-tag="简要">
+      <div class="no">A-06 · 简要</div>
+      <h3>闲鱼</h3>
+      <p>非标品 + 故事 + 议价。每一次浏览都像在寻宝，因为"下一次可能有好东西"。</p>
+      <div class="row"><span class="tag">寻宝感</span></div>
+      <span class="go">读档案 →</span>
+    </a>
+  </div>
+
+  <div class="sec"><span class="no">B</span><h2>六份档案的横向对照</h2><span class="hint">what's actually stolen</span></div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>对象</th><th>机制</th><th>被删除的决策点</th><th>我们的处理</th></tr></thead>
+      <tbody>
+        <tr><td><b>小红书</b></td><td>决策外包</td><td>我要不要自己判断</td><td>已迁移 → ClassPath</td></tr>
+        <tr><td><b>盲盒 / 抽卡</b></td><td>可变比率强化</td><td>要不要再抽一次</td><td>已迁移 → 行动盲盒</td></tr>
+        <tr><td><b>抖音</b></td><td>无限流 + 刺激密度</td><td>要不要继续看</td><td>不迁移：伦理成本过高</td></tr>
+        <tr><td><b>多邻国</b></td><td>损失厌恶 + 拟人化</td><td>要不要保连续</td><td>部分借用 → 反内卷契约</td></tr>
+        <tr><td><b>拼多多</b></td><td>关系链套利</td><td>要不要麻烦朋友</td><td>不迁移：把成本转给他人</td></tr>
+        <tr><td><b>闲鱼</b></td><td>非标品 + 偶然性</td><td>要不要再刷一次</td><td>观察中：依赖库存偶然性</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout amber" style="margin-top:22px">
+    <span class="lb">取舍原则</span>
+    不是所有机制都值得迁移。<b>把成本转嫁给第三方的机制（拼多多）、删除全部退出点的机制（抖音）</b>
+    我们不碰——迁过来只会让用户更惨，只是这次由我们收钱。
+  </div>
+
+  <div class="pager">
+    <a href="../devices/"><span class="k">← Prev</span><span class="n">五个装置</span></a>
+    <a class="right" href="xiaohongshu.html"><span class="k">Next →</span><span class="n">A-01 小红书</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">THE DECOMPILER · ARCHIVE<br>6 份档案 · 2 份已迁移</div>
+    <div class="f" style="text-align:right"><a href="../index.html">返回实验室</a></div>
+  </footer>
+</div>
+
+<script>
+document.getElementById("f").addEventListener("click", e=>{
+  const b = e.target.closest(".chip"); if(!b) return;
+  document.querySelectorAll("#f .chip").forEach(c=>c.classList.toggle("on", c===b));
+  const f = b.dataset.f;
+  document.querySelectorAll("#list .card").forEach(c=>{
+    c.style.display = (f==="all" || (c.dataset.tag||"").includes(f)) ? "" : "none";
+  });
+});
+</script>
+</body>
+</html>

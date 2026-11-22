@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>关于与边界 — 反编译实验室</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topnav">
+    <a class="brand" href="index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="method.html">方法</a>
+      <a href="devices/">装置</a>
+      <a href="archive/">档案</a>
+      <a href="case.html">案例</a>
+      <a href="sound.html">声音</a>
+      <a href="about.html" class="on">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="index.html">实验室</a><s>/</s><b>关于</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">About · 边界与假设</div>
+    <h1>这是一个<em>实验室</em>，<br>不是一个疗法。</h1>
+    <p class="lede">
+      我们拆机制、做原型、录档案。所有装置都是可交互的演示，
+      目的在证明一套方法能不能被复用，而不是宣称任何健康效果。
+    </p>
+  </section>
+
+  <div class="sec"><span class="no">01</span><h2>这个站点里有什么</h2><span class="hint">site map</span></div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>页面</th><th>内容</th><th>可交互</th></tr></thead>
+      <tbody>
+        <tr><td><b><a href="index.html">实验室主页</a></b></td><td>方法论公式、五个装置、案例入口、生成日志</td><td>是 · 街机键</td></tr>
+        <tr><td><b><a href="method.html">方法</a></b></td><td>拆 / 换 / 验，五条判据与失败模式</td><td>是 · 判据打分器</td></tr>
+        <tr><td><b><a href="devices/">装置库</a></b></td><td>五个装置 + 对比矩阵</td><td>是 · 机制筛选</td></tr>
+        <tr><td><b><a href="archive/">档案库</a></b></td><td>6 份逆向档案</td><td>是 · 深度/简要筛选</td></tr>
+        <tr><td><b><a href="case.html">案例 ClassPath</a></b></td><td>落地产品的机制定位与原型内嵌</td><td>是 · 内嵌原型</td></tr>
+        <tr><td><b><a href="sound.html">声音设计</a></b></td><td>8 个音效的声音板与映射表</td><td>是 · 可试听</td></tr>
+        <tr><td><b>关于（本页）</b></td><td>边界、假设、快捷键</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="no">02</span><h2>四条边界</h2><span class="hint">what we did not do</span></div>
+
+  <div class="grid-2">
+    <div class="callout red"><span class="lb">BOUNDARY 01</span><b>不是临床产品。</b>五个装置没有任何健康效果声明，也不替代任何行为干预方案。</div>
+    <div class="callout amber"><span class="lb">BOUNDARY 02</span><b>时间是压缩的。</b>悬念器「45 秒」对应真实的 45 分钟，契约「90 秒」对应 24 小时，界面上都标了。</div>
+    <div class="callout amber"><span class="lb">BOUNDARY 03</span><b>验证是自觉的。</b>清理器的「打扫完成」是勾选，不是图像识别。我们没做，就不写做了。</div>
+    <div class="callout red"><span class="lb">BOUNDARY 04</span><b>案例数据是虚构的。</b>课路的课程、教师、分数均为示意，不代表任何真实院校。</div>
+  </div>
+
+  <div class="sec"><span class="no">03</span><h2>三条待验证假设</h2><span class="hint">hypotheses, not findings</span></div>
+
+  <div class="prose">
+    <ol>
+      <li><b>H1：</b>学生真正需要的是"组合方案"而不是"单课评价"。若否，Path 这个对象就不成立。</li>
+      <li><b>H2：</b>处境相似度排序比热度排序更能提升"照抄率"。</li>
+      <li><b>H3：</b>内置预算护栏不会显著降低使用意愿——也就是说，"劝退"不会把人劝走。</li>
+    </ol>
+    <p>这三条任何一条被证伪，产品都要改。我们把它们写在明面上，而不是藏在假设里。</p>
+  </div>
+
+  <div class="sec"><span class="no">04</span><h2>快捷键</h2><span class="hint">on the lab page</span></div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th style="width:16%">键</th><th>动作</th></tr></thead>
+      <tbody>
+        <tr><td><b>D</b></td><td>按一下街机键（执行当前装置的主要动作）</td></tr>
+        <tr><td><b>1 – 5</b></td><td>直接切到第 N 个装置</td></tr>
+        <tr><td><b>C</b></td><td>进入案例子页 ClassPath</td></tr>
+        <tr><td><b>Esc</b></td><td>收起弹窗 / 抽屉</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="no">05</span><h2>技术</h2><span class="hint">stack</span></div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v">0</div><div class="k">构建步骤</div></div>
+    <div class="kpi"><div class="v">0</div><div class="k">音频文件</div></div>
+    <div class="kpi"><div class="v">12<small> 张</small></div><div class="k">API 生成素材</div></div>
+    <div class="kpi"><div class="v">13<small> 页</small></div><div class="k">静态页面</div></div>
+  </div>
+
+  <div class="prose" style="margin-top:22px">
+    <p>
+      纯静态：HTML + 原生 CSS/JS，无框架、无构建、无外部依赖。
+      图像由图像生成 API 产出并本地化；声音由 Web Audio 实时合成；
+      跨页转场用 View Transitions，装置切换用 Web Animations。
+    </p>
+  </div>
+
+  <div class="sec"><span class="no">06</span><h2>一句话</h2><span class="hint">closing</span></div>
+
+  <div class="callout violet" style="font-size:16px;line-height:1.9">
+    我们不是在做一个新工具，是在用逆向工程黑入大脑的多巴胺系统——
+    夺取不良产品的上瘾机制，把它重定向到用户自己身上。<br>
+    <b>分子一模一样，只换分母。</b>
+  </div>
+
+  <div class="pager">
+    <a href="sound.html"><span class="k">← Prev</span><span class="n">声音设计</span></a>
+    <a class="right" href="index.html"><span class="k">Home →</span><span class="n">实验室主页</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">THE DECOMPILER · ABOUT<br>Reverse Product Innovation · 2026</div>
+    <div class="f" style="text-align:right"><a href="index.html">返回实验室</a></div>
+  </footer>
+</div>
+</body>
+</html>

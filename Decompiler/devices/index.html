@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>五个装置 · 装置库 — 反编译实验室</title>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topnav">
+    <a class="brand" href="../index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="../method.html">方法</a>
+      <a href="./" class="on">装置</a>
+      <a href="../archive/">档案</a>
+      <a href="../case.html">案例</a>
+      <a href="../sound.html">声音</a>
+      <a href="../about.html">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="../index.html">实验室</a><s>/</s><b>装置</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">Devices · 01–05</div>
+    <h1>五个装置，<em>五种被劫持</em>的回路。</h1>
+    <p class="lede">
+      每个装置只做一件事：保留让人停不下来的那个机制，把"支付货币"换成对你有利的东西。
+      在实验室里它们都是 30 秒能玩完的原型，这一页是它们的档案。
+    </p>
+    <div class="meta-row">
+      <div class="m"><div class="k">Mechanisms</div><div class="v">斯金纳箱 · FOMO · 悬念 · 损失厌恶 · 完成强迫</div></div>
+      <div class="m"><div class="k">Play time</div><div class="v">每个 30–90 秒</div></div>
+    </div>
+  </section>
+
+  <div class="chipset" id="filter">
+    <button class="chip on" data-f="all">全部</button>
+    <button class="chip" data-f="随机">随机奖励</button>
+    <button class="chip" data-f="社交">社交</button>
+    <button class="chip" data-f="时间">时间</button>
+    <button class="chip" data-f="自我">自我</button>
+  </div>
+
+  <div class="grid-2" id="list">
+
+    <a class="card" href="../index.html#m1" data-tag="随机">
+      <div class="no">01 / ACTION GACHA</div>
+      <h3>行动盲盒</h3>
+      <p>对赌的是"随机掉落"。付出一段真实行动，换一个确定的奖励——随机的只是徽章长什么样。</p>
+      <div class="row"><span class="tag lime">斯金纳箱</span><span class="tag">30 秒</span></div>
+      <span class="go">进入装置 →</span>
+    </a>
+
+    <a class="card" href="../index.html#m2" data-tag="社交">
+      <div class="no">02 / ECHO CHAMBER</div>
+      <h3>自我回音壁</h3>
+      <p>对赌的是"刷到新东西"。刷新前必须先写一段真实的自我叙述，刷出来的只有你自己的情绪像。</p>
+      <div class="row"><span class="tag violet">FOMO</span><span class="tag">文本 / 语音</span></div>
+      <span class="go">进入装置 →</span>
+    </a>
+
+    <a class="card" href="../index.html#m3" data-tag="时间">
+      <div class="no">03 / CLIFFHANGER BREAKER</div>
+      <h3>悬念阻断器</h3>
+      <p>对赌的是"想知道结局"。下一幕的钥匙是一段不被打断的专注；中途退出，故事永远停在悬念最高处。</p>
+      <div class="row"><span class="tag cyan">悬念</span><span class="tag">45 秒</span></div>
+      <span class="go">进入装置 →</span>
+    </a>
+
+    <a class="card" href="../index.html#m4" data-tag="自我">
+      <div class="no">04 / ANTI-HUSTLE CONTRACT</div>
+      <h3>反内卷契约</h3>
+      <p>对赌的是"错过就没了"。倒计时不再逼你花钱，只逼你守信；破戒不扣钱，只留一张难看的证据。</p>
+      <div class="row"><span class="tag red">损失厌恶</span><span class="tag">90 秒</span></div>
+      <span class="go">进入装置 →</span>
+    </a>
+
+    <a class="card" href="../index.html#m5" data-tag="时间">
+      <div class="no">05 / COGNITIVE CLEANER</div>
+      <h3>认知清理器</h3>
+      <p>对赌的是"消除红点"。红点长在现实里：每清掉一块真实的杂乱，屏幕上的一格噪点就消失。</p>
+      <div class="row"><span class="tag">完成强迫</span><span class="tag">摄像头</span></div>
+      <span class="go">进入装置 →</span>
+    </a>
+
+    <a class="card" href="../case.html" data-tag="自我">
+      <div class="no">06 / CASE · CLASSPATH</div>
+      <h3>案例：课路</h3>
+      <p>把同一套逻辑落到一个完整产品上：不是评课，是交"可以照抄的一条路径"。</p>
+      <div class="row"><span class="tag lime">完整产品</span><span class="tag">子页面</span></div>
+      <span class="go">进入案例 →</span>
+    </a>
+  </div>
+
+  <div class="sec"><span class="no">A</span><h2>横向对比</h2><span class="hint">same numerator, different denominator</span></div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>装置</th><th>分子（保留）</th><th>被删掉的决策点</th><th>旧货币 → 新货币</th></tr></thead>
+      <tbody>
+        <tr><td><b>01 行动盲盒</b></td><td>可变比率强化</td><td>要不要开始</td><td>钱 / 抽卡道具 → <b>30 秒真实行动</b></td></tr>
+        <tr><td><b>02 自我回音壁</b></td><td>FOMO + 社交认同</td><td>要不要看</td><td>注意力 → <b>一段诚实的自我叙述</b></td></tr>
+        <tr><td><b>03 悬念阻断器</b></td><td>悬念 + 沉没成本</td><td>要不要看下一集</td><td>不可逆的时间块 → <b>一段专注</b></td></tr>
+        <tr><td><b>04 反内卷契约</b></td><td>损失厌恶 + 稀缺</td><td>要不要买</td><td>钱 → <b>一次守信</b></td></tr>
+        <tr><td><b>05 认知清理器</b></td><td>红点 + 完成强迫</td><td>要不要处理</td><td>虚拟注意力 → <b>现实里的一块秩序</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout violet" style="margin-top:22px">
+    <span class="lb">共同点</span>
+    五个装置的分子都是"不可预测的奖励 × 被删除的退出决策点"。差别只在<b>分母</b>：你付出什么、换回什么。
+    所以它们可以共用一套声音、一套交互、一个街机键——因为结构是同一个。
+  </div>
+
+  <div class="pager">
+    <a href="../method.html"><span class="k">← Prev</span><span class="n">方法论</span></a>
+    <a class="right" href="../archive/"><span class="k">Next →</span><span class="n">逆向档案库</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">THE DECOMPILER · DEVICES<br>五个装置 · 全部可交互</div>
+    <div class="f" style="text-align:right"><a href="../index.html#lab">回到实验室</a></div>
+  </footer>
+</div>
+
+<script>
+document.getElementById("filter").addEventListener("click", e=>{
+  const b = e.target.closest(".chip");
+  if(!b) return;
+  document.querySelectorAll("#filter .chip").forEach(c=>c.classList.toggle("on", c===b));
+  const f = b.dataset.f;
+  document.querySelectorAll("#list .card").forEach(card=>{
+    const ok = f === "all" || (card.dataset.tag||"").includes(f);
+    card.style.display = ok ? "" : "none";
+  });
+});
+</script>
+</body>
+</html>

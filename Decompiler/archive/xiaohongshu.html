@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A-01 小红书 · 逆向档案 — 反编译实验室</title>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topnav">
+    <a class="brand" href="../index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="../method.html">方法</a>
+      <a href="../devices/">装置</a>
+      <a href="./" class="on">档案</a>
+      <a href="../case.html">案例</a>
+      <a href="../sound.html">声音</a>
+      <a href="../about.html">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="../index.html">实验室</a><s>/</s><a href="./">档案</a><s>/</s><b>A-01 小红书</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">A-01 · Deep dossier</div>
+    <h1>它卖的不是内容，<br>是<em>决定的代理权</em>。</h1>
+    <p class="lede">
+      用户打开它，多数时候不是"想看点什么"，而是<b>有一个还没做完的决定</b>。
+      这份档案拆的就是：它如何把一次判断，变成一次检索。
+    </p>
+    <div class="meta-row">
+      <div class="m"><div class="k">Status</div><div class="v">已迁移 → ClassPath</div></div>
+      <div class="m"><div class="k">Mechanism</div><div class="v">决策外包 + 素人信任</div></div>
+      <div class="m"><div class="k">Formula</div><div class="v">V = (E × S × U) / C</div></div>
+    </div>
+  </section>
+
+  <div class="sec"><span class="no">01</span><h2>五个"忍不住"的瞬间</h2><span class="hint">behaviour, not features</span></div>
+
+  <div class="prose">
+    <p>不写功能，只写行为切片。这五条是我们自己使用时记下来的：</p>
+    <ol>
+      <li><b>决定悬空时打开。</b>午饭吃什么、买哪款耳机、周末去哪——不是"我想看内容"，是"我有个决定没做"。</li>
+      <li><b>30 秒内要一个结论。</b>首图就是结论，标题就是问题（"200 块以内送男朋友"）。用户在接受信息前，先接受了一个判断。</li>
+      <li><b>只信"和我像的人"。</b>同龄、同预算、同城市、同肤质。官方说明和专业测评反而排在后面——权威在这里是失效的。</li>
+      <li><b>收藏 ≠ 喜欢。</b>收藏夹是一个"待办清单"，不是"喜欢清单"。</li>
+      <li><b>搜索框里是问题，不是关键词。</b>输入的是处境："大一 想保研 但数学不好"。</li>
+    </ol>
+    <blockquote>这五条指向同一个结论：用户来这里不是为了"看"，是为了<b>不用自己判断</b>。</blockquote>
+  </div>
+
+  <div class="sec"><span class="no">02</span><h2>四层拆解</h2><span class="hint">function → interaction → psychology → value</span></div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th style="width:16%">层级</th><th style="width:30%">现象</th><th style="width:28%">机制</th><th>被满足的需求</th></tr></thead>
+      <tbody>
+        <tr><td><b>功能层</b></td><td>图文笔记、双列瀑布流、搜索、收藏</td><td>内容供给 + 检索 + 归集</td><td>找到别人的经验</td></tr>
+        <tr><td><b>交互层</b></td><td>首图即结论、标题即问题、收藏一键</td><td>把比较成本与承诺成本同时压到接近零</td><td>快速收敛选项</td></tr>
+        <tr><td><b>心理层</b></td><td>决策外包、身份相似信任、收藏夹=待办</td><td>把"我要判断"换成"我认领一个判断"</td><td>降低判断焦虑</td></tr>
+        <tr><td><b>价值层</b></td><td>——</td><td><b>用同类人的可执行经验，替代权威的抽象标准</b></td><td>把决策变成"检索 + 照做"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="no">03</span><h2>可迁移的那条公式</h2><span class="hint">the only portable part</span></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="no">FORMULA</div>
+      <h3>V = ( E × S × U ) / C</h3>
+      <p>E 可执行度 · S 处境相似度 · U 决策紧迫度 · C 检索与验证成本。乘法结构：任何一项为零，整体价值归零。</p>
+    </div>
+    <div class="card">
+      <div class="no">TEST</div>
+      <h3>抄对了吗？</h3>
+      <p>E 高 S 低 → 教程，看完就走；S 高 E 低 → 吐槽社区，情绪散完就散。只有两者同时高，才是分子。</p>
+    </div>
+  </div>
+
+  <div class="sec"><span class="no">04</span><h2>三条设计律</h2><span class="hint">what we actually copied</span></div>
+
+  <div class="grid-3">
+    <div class="card"><div class="no">律 1</div><h3>交付可执行单元</h3><p>给"价格 89 / 店在二楼 / 别点招牌"，不给"这家不错"。</p></div>
+    <div class="card"><div class="no">律 2</div><h3>信任来自相似</h3><p>必须携带处境标签，并保留瑕疵感。权威榜单会让 S 归零。</p></div>
+    <div class="card"><div class="no">律 3</div><h3>给一个零成本承诺</h3><p>收藏的成本≈0，却把内容搬进了"我的计划"。</p></div>
+  </div>
+
+  <div class="sec"><span class="no">05</span><h2>迁到了哪里</h2><span class="hint">→ case 01</span></div>
+
+  <div class="callout violet">
+    <span class="lb">MIGRATION</span>
+    <b>高校选课。</b>每个学生每学期都要做一次高紧迫、强非标、官方信息极度干燥的决定。
+    我们把最小单元从"一门课的评价"换成"一条可以照抄的路径"——
+    于是这条信息流的产出物，从别人的结论变成了你自己的学期。
+  </div>
+  <div class="grid-2" style="margin-top:16px">
+    <a class="card" href="../case.html">
+      <div class="no">CASE 01</div>
+      <h3>ClassPath 课路</h3>
+      <p>完整案例页：机制定位、三条落地律、可交互原型。</p>
+      <span class="go">打开案例 →</span>
+    </a>
+    <div class="card">
+      <div class="no">BOUNDARY</div>
+      <h3>没抄的部分</h3>
+      <p>无限流、热度排序、制造比较焦虑的推荐位——这些是注意力逻辑，不是价值逻辑，全部拒绝。</p>
+    </div>
+  </div>
+
+  <div class="pager">
+    <a href="./"><span class="k">← Archive</span><span class="n">档案库</span></a>
+    <a class="right" href="gacha.html"><span class="k">Next →</span><span class="n">A-02 盲盒 / 抽卡</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">A-01 · XIAOHONGSHU<br>观察来自自省，非统计抽样</div>
+    <div class="f" style="text-align:right"><a href="./">全部档案</a></div>
+  </footer>
+</div>
+</body>
+</html>

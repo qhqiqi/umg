@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ClassPath 课路 · 不评课，只交路径</title>
+<style>
+:root{
+  --paper:#F6F3EC; --card:#FFFDF8; --ink:#14161B; --ink2:#41454E; --mute:#8A8F9A;
+  --line:#E4DED1; --accent:#1B3FD8; --accent-soft:#EDF0FF;
+  --red:#B3341C; --red-bg:#FBEAE6; --amber:#8A5B00; --amber-bg:#FBF0D9; --ok:#1B6B4A;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Consolas,monospace;
+  --sans:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans); color:var(--ink); background:#0E1015;
+  background-image:radial-gradient(1200px 600px at 20% -10%,#232838 0%,rgba(20,22,28,0) 60%),
+                   radial-gradient(900px 500px at 90% 110%,#1d2130 0%,rgba(20,22,28,0) 60%);
+  min-height:100dvh; display:flex; justify-content:center; align-items:flex-start;
+}
+.stage{width:100%; display:flex; justify-content:center; padding:0}
+.app{
+  width:100%; max-width:430px; height:100dvh; background:var(--paper);
+  display:flex; flex-direction:column; overflow:hidden; position:relative;
+}
+@media (min-width:470px){
+  .stage{padding:24px 0}
+  .app{height:min(880px,calc(100dvh - 48px)); border-radius:34px;
+       box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.07);}
+}
+
+/* ---------- top bar ---------- */
+.topbar{
+  flex:none; display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px 10px; gap:10px;
+}
+.brand{display:flex; align-items:center; gap:8px; font-weight:800; letter-spacing:-.01em; font-size:14px}
+.brand i{width:18px;height:18px;border-radius:6px;background:var(--ink);display:block;position:relative}
+.brand i:after{content:"";position:absolute;left:5px;top:5px;width:8px;height:8px;border-radius:2px;background:var(--paper)}
+.brand span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--mute);font-weight:600}
+.btn-ghost{
+  border:1px solid var(--line); background:transparent; color:var(--ink2);
+  font:inherit; font-size:12px; padding:7px 11px; border-radius:999px; cursor:pointer;
+}
+.btn-ghost:active{transform:scale(.97)}
+.iconbtn{
+  width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:transparent;
+  display:grid;place-items:center;cursor:pointer;color:var(--ink);font-size:15px;
+}
+
+/* ---------- scroll area ---------- */
+.scroll{flex:1; overflow-y:auto; overflow-x:hidden; padding:0 18px 18px; scroll-behavior:smooth}
+.scroll::-webkit-scrollbar{width:0}
+.dock{
+  flex:none; padding:12px 18px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--paper) 62%,rgba(246,243,236,0));
+  display:flex; gap:10px; align-items:center;
+}
+.dock.hide{display:none}
+
+/* ---------- intake ---------- */
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase}
+.hero{padding:14px 0 6px}
+h1{font-size:31px;line-height:1.24;letter-spacing:-.03em;margin:12px 0 12px;font-weight:800}
+.lede{font-size:13.5px;line-height:1.72;color:var(--ink2);margin:0 0 22px;max-width:33ch}
+.sec-label{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--mute);
+  text-transform:uppercase;margin:20px 0 10px;border-top:1px solid var(--line);padding-top:12px;
+}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  border:1px solid var(--line); background:var(--card); color:var(--ink2);
+  font:inherit; font-size:13px; padding:9px 14px; border-radius:999px; cursor:pointer;
+  transition:.16s; display:flex; align-items:center; gap:6px;
+}
+.chip small{font-family:var(--mono);font-size:9px;color:var(--mute)}
+.chip:active{transform:scale(.97)}
+.chip.on{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.chip.on small{color:rgba(246,243,236,.55)}
+.slider-wrap{margin-top:4px}
+input[type=range]{
+  -webkit-appearance:none; width:100%; height:26px; background:transparent; margin:0; cursor:pointer;
+}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--line);border-radius:3px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px;height:22px;border-radius:50%;background:var(--ink);
+  border:4px solid var(--paper); box-shadow:0 1px 4px rgba(0,0,0,.25); margin-top:-10px;
+}
+.hint{font-size:11.5px;color:var(--mute);line-height:1.6;margin-top:2px}
+.hint b{color:var(--ink2);font-weight:600}
+.peek{
+  border:1px dashed #D8D1C0; border-radius:16px; padding:14px; background:rgba(255,253,248,.55);
+}
+.peek .pt{font-size:14.5px;font-weight:700;line-height:1.45;letter-spacing:-.01em;margin:8px 0 7px;color:var(--ink2)}
+.peek .pm{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.04em;line-height:1.7}
+.peek .pn{font-size:11.5px;color:var(--mute);line-height:1.65;margin-top:8px;padding-top:8px;border-top:1px dashed #E2DCCD}
+
+/* ---------- buttons ---------- */
+.btn{
+  font:inherit; border:none; border-radius:14px; padding:14px 16px; font-size:14.5px;
+  font-weight:700; cursor:pointer; transition:.16s; flex:1;
+}
+.btn:active{transform:scale(.985)}
+.btn.primary{background:var(--accent); color:#fff; box-shadow:0 8px 20px rgba(27,63,216,.24)}
+.btn.primary[disabled]{background:#C9CBD3;box-shadow:none;cursor:not-allowed}
+.btn.dark{background:var(--ink); color:var(--paper)}
+.btn.line{background:transparent;border:1px solid var(--line);color:var(--ink2);flex:none;padding:14px 18px}
+.btn.tiny{font-size:12.5px;padding:10px 13px;border-radius:11px}
+.foot{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--mute);text-align:center;margin-top:10px}
+
+/* ---------- list ---------- */
+.list-head{padding:8px 0 4px}
+.list-head h2{font-size:19px;letter-spacing:-.02em;margin:6px 0 6px;font-weight:800;line-height:1.35}
+.list-head p{font-size:12px;color:var(--mute);margin:0 0 16px;line-height:1.6}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:18px;
+  padding:16px; margin-bottom:12px; cursor:pointer; position:relative; overflow:hidden;
+  transition:.18s;
+}
+.card:active{transform:scale(.988)}
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
+.badge{
+  display:inline-block;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-weight:700;
+}
+.badge.best{background:var(--accent);color:#fff}
+.term{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.06em}
+.card h3{font-size:17.5px;line-height:1.42;margin:0 0 8px;letter-spacing:-.02em;font-weight:800}
+.meta{font-size:11.5px;color:var(--mute);display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.dot{width:3px;height:3px;border-radius:50%;background:var(--line)}
+.cc{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:13px}
+.cc span{
+  font-size:11px;padding:4px 8px;border-radius:7px;background:#F1EDE3;color:var(--ink2);
+  display:inline-flex;gap:5px;align-items:center;
+}
+.cc span em{font-family:var(--mono);font-style:normal;font-size:9.5px;color:var(--mute)}
+.bar{height:4px;border-radius:4px;background:#EDE8DC;overflow:hidden;margin:2px 0 8px}
+.bar i{display:block;height:100%;background:var(--ink);border-radius:4px}
+.bar i.over{background:var(--red)}
+.cardfoot{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.04em}
+.cardfoot b{color:var(--ink);font-weight:700}
+.sim{display:flex;align-items:center;gap:5px}
+.sim s{text-decoration:none;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+
+/* ---------- detail ---------- */
+.d-head{padding:6px 0 0}
+.d-head h2{font-size:24px;line-height:1.32;letter-spacing:-.03em;margin:10px 0 14px;font-weight:800}
+.author{display:flex;align-items:center;gap:10px;padding:12px 0 14px;border-bottom:1px solid var(--line)}
+.ava{
+  width:38px;height:38px;border-radius:12px;background:var(--ink);color:var(--paper);
+  display:grid;place-items:center;font-size:15px;font-weight:700;flex:none;
+}
+.author .who{font-size:13px;font-weight:700;line-height:1.4}
+.author .sub{font-size:11px;color:var(--mute);line-height:1.5;font-family:var(--mono);letter-spacing:.02em}
+.matchstrip{
+  display:flex;gap:10px;margin:14px 0 4px;padding:11px 12px;border-radius:12px;
+  background:var(--accent-soft);font-size:11.5px;color:var(--accent);line-height:1.55;
+}
+.matchstrip b{font-family:var(--mono);font-size:13px}
+.block{padding:18px 0;border-bottom:1px solid var(--line)}
+.block:last-child{border-bottom:none}
+.block h4{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--mute);
+  margin:0 0 10px;font-weight:600;
+}
+.why{font-size:14px;line-height:1.82;color:var(--ink2);margin:0}
+.why strong{color:var(--ink);font-weight:700;background:linear-gradient(transparent 62%,#DDE4FF 62%)}
+.course{padding:12px 0;border-bottom:1px dashed var(--line)}
+.course:last-child{border-bottom:none;padding-bottom:2px}
+.course .cl{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.course .cn{font-size:14px;font-weight:700}
+.course .cc2{font-family:var(--mono);font-size:11px;color:var(--mute)}
+.course .fields{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0 6px}
+.course .fields i{
+  font-style:normal;font-family:var(--mono);font-size:9.5px;padding:3px 6px;border-radius:5px;
+  background:#F1EDE3;color:var(--ink2);
+}
+.course .fields i.warn{background:var(--amber-bg);color:var(--amber)}
+.course .note{font-size:11.5px;color:var(--mute);line-height:1.6}
+.box{padding:12px 13px;border-radius:12px;font-size:12.5px;line-height:1.7}
+.box.amber{background:var(--amber-bg);color:var(--amber)}
+.box.red{background:var(--red-bg);color:var(--red)}
+.box.plain{background:#F1EDE3;color:var(--ink2)}
+
+/* ---------- draft ---------- */
+.stats{display:flex;gap:8px;margin:14px 0 16px}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 11px}
+.stat .v{font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.stat .v small{font-size:10px;color:var(--mute);font-weight:400;letter-spacing:0}
+.stat .k{font-size:10px;color:var(--mute);margin-top:5px;font-family:var(--mono);letter-spacing:.06em}
+.stat.bad .v{color:var(--red)}
+.dl{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.row{
+  background:var(--card);border:1px solid var(--line);border-radius:13px;padding:11px 13px;
+  display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+}
+.row .l .n{font-size:13.5px;font-weight:700;line-height:1.45}
+.row .l .m{font-family:var(--mono);font-size:9.5px;color:var(--mute);margin-top:3px;letter-spacing:.03em}
+.row .r{font-family:var(--mono);font-size:10px;color:var(--mute);text-align:right;white-space:nowrap;line-height:1.6}
+.row .r b{color:var(--ink)}
+.row .src{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.row .src s{
+  text-decoration:none;font-size:9px;font-family:var(--mono);letter-spacing:.06em;
+  color:var(--accent);background:var(--accent-soft);padding:2px 6px;border-radius:4px;
+}
+.empty{text-align:center;padding:56px 20px;color:var(--mute)}
+.empty .big{font-size:38px;margin-bottom:10px;opacity:.35}
+.empty p{font-size:12.5px;line-height:1.7;margin:0 0 18px}
+h2.sect{font-size:20px;letter-spacing:-.025em;margin:10px 0 4px;font-weight:800}
+.sub2{font-size:11.5px;color:var(--mute);margin:0 0 4px;line-height:1.6;font-family:var(--mono);letter-spacing:.02em}
+
+/* ---------- sheet ---------- */
+.mask{
+  position:fixed;inset:0;background:rgba(10,11,14,.5);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:.24s;z-index:40;
+}
+.mask.on{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:50%;bottom:0;transform:translate(-50%,102%);
+  width:100%;max-width:430px;background:var(--paper);border-radius:24px 24px 0 0;
+  z-index:41;transition:transform .3s cubic-bezier(.2,.9,.2,1);
+  padding:10px 20px calc(24px + env(safe-area-inset-bottom));max-height:78dvh;overflow-y:auto;
+}
+.sheet.on{transform:translate(-50%,0)}
+.sheet .grab{width:38px;height:4px;border-radius:4px;background:var(--line);margin:2px auto 16px}
+.formula{
+  background:var(--ink);color:var(--paper);border-radius:14px;padding:16px;margin:12px 0 16px;
+  font-family:var(--mono);font-size:13px;line-height:1.9;letter-spacing:.02em;
+}
+.formula em{font-style:normal;color:#8FA4FF}
+.formula small{display:block;font-size:10px;color:rgba(246,243,236,.55);margin-top:8px;letter-spacing:.06em;line-height:1.7}
+.law{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.65;color:var(--ink2)}
+.law:last-child{border-bottom:none}
+.law b{font-family:var(--mono);font-size:10px;color:var(--accent);flex:none;padding-top:2px;letter-spacing:.06em}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:96px;transform:translate(-50%,14px);
+  background:var(--ink);color:var(--paper);font-size:12.5px;padding:11px 16px;border-radius:999px;
+  opacity:0;pointer-events:none;transition:.22s;z-index:60;white-space:nowrap;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.nb{animation:nb .28s ease-out both}
+@keyframes nb{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="stage"><div class="app" id="app"></div></div>
+<div class="mask" id="mask" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="grab"></div>
+  <div class="kicker">Reverse Design</div>
+  <h2 class="sect" style="margin-top:8px">这不是一个评课 App</h2>
+  <p class="sub2">我们把「小红书」拆到价值逻辑层，再把那条公式搬到选课上。</p>
+  <div class="formula">
+    V = ( E × S × U ) / C
+    <small>E 可执行度 · S 处境相似度 · U 决策紧迫度 · C 检索与验证成本</small>
+  </div>
+  <div class="law"><b>律 1</b><div>交付<span style="color:var(--ink);font-weight:700">可执行单元</span>，不交付评价。告诉你「价格 89 / 店在二楼 / 别点招牌」，而不是「这家不错」。</div></div>
+  <div class="law"><b>律 2</b><div>信任来自<span style="color:var(--ink);font-weight:700">相似</span>，不来自权威。所以每条路径都带处境标签，列表按相似度排序，不按热度。</div></div>
+  <div class="law"><b>律 3</b><div>给一个近零成本的<span style="color:var(--ink);font-weight:700">承诺动作</span>。收藏不是喜欢，是「这个决定我还没做完」——所以收藏会直接变成课表草案。</div></div>
+  <div class="law" style="border-top:1px solid var(--line);margin-top:6px;padding-top:14px">
+    <b>取舍</b><div>继承它的价值逻辑，<span style="color:var(--red)">拒绝它的注意力逻辑</span>：不做无限流、强制写「这条路径不适合谁」、内置时间预算护栏。</div>
+  </div>
+  <button class="btn dark" style="width:100%;margin-top:16px" onclick="closeSheet()">知道了</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 数据：8 条示意路径（虚构，用于演示） ============ */
+const LIB = {
+  ds:  {n:"数据结构",c:4.0,t:"陈",a:"考试+4 次编程作业",roll:"不点名",early:false,g:[85,92],h:6,slots:[[1,1],[1,2],[3,3],[3,4]],note:"作业量大但给分稳定，别拖到最后一周才写"},
+  dl:  {n:"数字逻辑",c:3.0,t:"周",a:"实验 6 次+期末",roll:"抽查",early:false,g:[80,88],h:4,slots:[[2,3],[2,4]],note:"实验报告占 40%，模板化写能省一半时间"},
+  co:  {n:"计算机组成原理",c:4.0,t:"李",a:"期中+期末+2 次大作业",roll:"偶尔",early:true,g:[78,92],h:6,slots:[[1,3],[1,4],[4,1],[4,2]],note:"期中之后难度陡增，流水线那章提前两周啃"},
+  marx:{n:"马克思主义基本原理",c:3.0,t:"王",a:"论文+期末",roll:"全点名",early:false,g:[88,95],h:3,slots:[[5,5],[5,6]],note:"论文选题贴近课堂案例就给分好看"},
+  eng: {n:"大学英语",c:2.0,t:"赵",a:"期末+口语",roll:"抽查",early:true,g:[85,93],h:2,slots:[[2,1],[2,2]],note:"口语分是白送的，别缺考"},
+  pe:  {n:"体育",c:1.0,t:"孙",a:"体测+出勤",roll:"全点名",early:false,g:[90,96],h:1,slots:[[1,3],[1,4]],note:"出勤即高分"},
+  db:  {n:"数据库系统",c:3.0,t:"吴",a:"项目+期末",roll:"抽查",early:false,g:[84,91],h:3,slots:[[3,1],[3,2]],note:"项目用 Spring 那套，能直接写进简历"},
+  se:  {n:"软件工程",c:3.0,t:"郑",a:"团队项目 60%",roll:"不点名",early:false,g:[82,93],h:4,slots:[[4,3],[4,4]],note:"第一周就要把队友定下来，晚一周只能捡剩下的"},
+  os:  {n:"操作系统",c:3.5,t:"何",a:"考试+2 次实验",roll:"抽查",early:false,g:[80,90],h:5,slots:[[2,5],[2,6],[5,1]],note:"实验比考试难，别只背概念"},
+  net: {n:"计算机网络",c:3.0,t:"徐",a:"考试+抓包实验",roll:"抽查",early:false,g:[81,90],h:4,slots:[[3,5],[3,6]],note:"抓包实验做完，期末选择几乎满分"},
+  ml:  {n:"机器学习",c:3.0,t:"沈",a:"大作业+期末",roll:"不点名",early:false,g:[85,94],h:5,slots:[[1,5],[1,6]],note:"大作业自己推一遍梯度下降，比抄代码有用"},
+  comp:{n:"编译原理",c:3.5,t:"韩",a:"考试+4 次实验",roll:"抽查",early:true,g:[75,88],h:6,slots:[[4,1],[4,2],[2,7]],note:"实验一周 8 小时起，会和别的大作业撞在期中"},
+  algo:{n:"算法设计与分析",c:3.0,t:"高",a:"考试+3 次作业",roll:"不点名",early:false,g:[80,90],h:4,slots:[[5,3],[5,4]],note:"和数据结构同修等于重复投入"},
+  aw:  {n:"学术写作",c:1.0,t:"罗",a:"论文",roll:"全点名",early:false,g:[90,97],h:1,slots:[[5,7]],note:"进组面试时，这是唯一能拿出来证明的东西"},
+  calc2:{n:"高等数学 A（下）",c:5.0,t:"杨",a:"考试+期中",roll:"全点名",early:true,g:[70,92],h:7,slots:[[1,1],[1,2],[3,1],[3,2],[5,1]],note:"转专业考核只看这一门的下限"},
+  dm:  {n:"离散数学",c:3.0,t:"秦",a:"考试",roll:"抽查",early:false,g:[82,92],h:4,slots:[[2,3],[2,4]],note:"证明题占七成，背定义没用"},
+  prob:{n:"概率论与数理统计",c:3.0,t:"许",a:"考试",roll:"抽查",early:false,g:[78,90],h:4,slots:[[3,3],[3,4]],note:"后半本才是重点"},
+  phys:{n:"大学物理（下）",c:4.0,t:"邓",a:"考试+实验",roll:"全点名",early:true,g:[72,90],h:5,slots:[[4,1],[4,2],[5,5]],note:"实验报告提前一周写完，别和笔试挤同一周"},
+  calc1:{n:"高等数学 A（上）",c:5.0,t:"杨",a:"考试+期中",roll:"全点名",early:true,g:[72,93],h:7,slots:[[1,1],[1,2],[3,1],[3,2],[5,1]],note:"第一次期中会筛掉一半人的自信"},
+  la:  {n:"线性代数",c:3.0,t:"冯",a:"考试",roll:"抽查",early:false,g:[83,93],h:3,slots:[[1,7],[1,8]],note:"和考研线代一起学，省一遍"},
+  py:  {n:"Python 程序设计",c:2.0,t:"蒋",a:"上机+项目",roll:"不点名",early:false,g:[88,96],h:2,slots:[[4,7]],note:"送分，但项目要认真做"},
+  st:  {n:"软件测试",c:2.0,t:"曹",a:"项目",roll:"不点名",early:false,g:[86,94],h:2,slots:[[2,7]],note:"和实习面试的测试岗内容高度重合"},
+  cc:  {n:"云计算导论",c:2.0,t:"彭",a:"报告",roll:"不点名",early:false,g:[85,93],h:2,slots:[[3,7]],note:"报告写成部署文档就能拿 A"},
+  rec: {n:"推荐系统",c:3.0,t:"卢",a:"大作业",roll:"不点名",early:false,g:[84,93],h:3,slots:[[1,7],[1,8]],note:"大作业可以直接当秋招作品集"},
+  ie:  {n:"创新创业基础",c:1.0,t:"董",a:"商业计划书",roll:"全点名",early:false,g:[90,98],h:1,slots:[[5,8]],note:"白给学分，用来凑毕业要求的"},
+  infosec:{n:"信息安全导论",c:2.0,t:"袁",a:"考试",roll:"不点名",early:false,g:[85,93],h:2,slots:[[4,5]],note:"上课不听也能过，但考公有用"},
+  hci: {n:"人机交互",c:2.0,t:"崔",a:"作品集",roll:"不点名",early:false,g:[88,96],h:2,slots:[[2,9]],note:"作品集能直接放进设计岗简历"},
+  vis: {n:"数据可视化",c:2.0,t:"段",a:"作品",roll:"不点名",early:false,g:[87,95],h:2,slots:[[3,9]],note:"期末交三个作品，没有考试"},
+};
+
+const PATHS = [
+  {id:"p1", goals:["保研","稳绩点"], term:"大二上", tag:"保研",
+   title:"保研稳绩点：把「给分稳」的四门放在同一学期",
+   author:{n:"林", name:"小林", sub:"计算机科学与技术 · 2 年级 · 目标保研"},
+   hours:22, grade:[85,92], saves:412, copies:87, weeks:18,
+   why:"保研看的是 <strong>GPA 的分子和分母</strong>：分子是分数，分母是你花掉的时间。这条路径把四门「给分稳」的课放在一起，把「难度陡增」的组成原理单独隔离出来，避免它在期中之后拖垮另外三门。",
+   risk:"不要把《算法设计与分析》放在同一学期：两门课的大作业都会堆在期末前两周。",
+   result:"学期 GPA 3.82；组成原理 91；唯一低于 85 的是数字逻辑的实验报告。",
+   unfit:"想同时准备 ACM 或实习面试的人：周学时 22 已经没有余量。",
+   courses:["ds","dl","co","marx","eng"]},
+
+  {id:"p2", goals:["就业","实习"], term:"大二下", tag:"就业",
+   title:"就业上岸线：只选「面试会问 + 能写进简历」的四门",
+   author:{n:"泽", name:"阿泽", sub:"软件工程 · 3 年级 · 已拿后端实习 offer"},
+   hours:18, grade:[82,92], saves:236, copies:64, weeks:18,
+   why:"这学期只做一件事：让简历在秋招前有一行能讲 20 分钟的东西。软工的项目直接当简历项目；数据库 + 网络是后端面试的两根支柱；操作系统放最后，因为它的知识可以在面试前用两周突击补齐。",
+   risk:"软工组队第一周就要定人，晚一周只能捡剩下的队友。",
+   result:"学期绩点 3.5；软工项目成了简历第一行；暑期拿到后端实习。",
+   unfit:"要冲保研排名的人：项目制课程的给分方差非常大。",
+   courses:["db","se","os","net"]},
+
+  {id:"p3", goals:["科研","保研"], term:"大三上", tag:"科研",
+   title:"进组打底：为「和老师聊 20 分钟」而排的课",
+   author:{n:"Y", name:"Yan", sub:"人工智能 · 3 年级 · 已进 NLP 组"},
+   hours:24, grade:[80,92], saves:189, copies:38, weeks:18,
+   why:"进组面试要三样东西：数学直觉（机器学习）、读源码的耐心（编译原理）、以及一个能证明你会写论文的东西（学术写作）。这条路径不为绩点，为的是<strong>面试时有的聊</strong>。",
+   risk:"编译原理的实验一周 8 小时起，会和机器学习的大作业撞在期中。",
+   result:"机器学习 89；编译原理 76（唯一低分）；进了老师的 NLP 组。",
+   unfit:"需要保研排名的人：这条路径的给分下限很低。",
+   courses:["ml","comp","algo","aw"]},
+
+  {id:"p4", goals:["转专业","稳绩点"], term:"大一下", tag:"转专业",
+   title:"转专业补课：只补「考核会看」的四门",
+   author:{n:"K", name:"Kai", sub:"材料 → 计算机 · 转专业第 2 名"},
+   hours:24, grade:[75,91], saves:301, copies:112, weeks:18,
+   why:"转专业的核心不是「学得多」，是<strong>补得准</strong>：把目标专业大一的必修表打印出来，一门一门对着补。这条路径只补四门，因为转专业考核只看这四门。",
+   risk:"物理实验报告和转专业笔试在同一周，报告要提前写完。",
+   result:"转专业考核第 2 名，成功转入。",
+   unfit:"只是「想试试」的人：这条路径没有退路，补不完就是白读一年。",
+   courses:["calc2","dm","prob","phys"]},
+
+  {id:"p5", goals:["稳绩点","转专业"], term:"大二上", tag:"稳绩点",
+   title:"稳住不挂：刻意少修一门，把周学时压到 16",
+   author:{n:"橘", name:"橘子", sub:"计算机 · 2 年级 · 上学期挂过一门"},
+   hours:16, grade:[78,93], saves:520, copies:143, weeks:18,
+   why:"这条路径<strong>故意少修一门</strong>：不选计算机组成原理，把它挪到大三上。代价是延后一学期，收益是周学时从 22 降到 16，每门课都能留出复习时间。",
+   risk:"少修一门会影响保研的课程进度——如果你要保研，别选这条。",
+   result:"全部通过，最低 78；绩点从 2.6 回到 3.1。",
+   unfit:"保研或按时毕业压力大的人。",
+   courses:["ds","dl","marx","eng","pe"]},
+
+  {id:"p6", goals:["实习","就业"], term:"大三上", tag:"实习",
+   title:"腾时间实习：9 学分，把周三到周五整块让给公司",
+   author:{n:"M", name:"Momo", sub:"计算机 · 3 年级 · 每周三天实习"},
+   hours:12, grade:[85,95], saves:268, copies:71, weeks:18,
+   why:"实习的瓶颈不是能力，是<strong>能不能每周空出三天</strong>。这条路径把课程压到 9 学分，全部选「大作业制、不点名、无早八」的课，把周三到周五整块让给公司。",
+   risk:"大作业制意味着期末前会同时爆四个项目，提前排期。",
+   result:"9 学分全部通过，实习转正。",
+   unfit:"需要课程硬技能打底的人：这条路径几乎没有硬课。",
+   courses:["se","infosec","hci","vis"]},
+
+  {id:"p7", goals:["稳绩点","转专业"], term:"大一上", tag:"稳绩点",
+   title:"大一上试水：先搞清楚「大学怎么考试」",
+   author:{n:"白", name:"白", sub:"计算机 · 1 年级 · 第一学期"},
+   hours:18, grade:[80,95], saves:634, copies:198, weeks:18,
+   why:"大一上最重要的不是绩点，是<strong>摸清楚这所学校的考试长什么样</strong>。这条路径只放五门必修，把线性代数提前修掉，给大二腾出位置。",
+   risk:"高数是唯一可能挂的课，期中考完就要开始补。",
+   result:"绩点 3.6；线代 91；高数 79（靠期末突击救回来）。",
+   unfit:"想大一就进实验室的人：这条路径没有留出科研时间。",
+   courses:["calc1","la","eng","py","pe"]},
+
+  {id:"p8", goals:["就业","实习"], term:"大三下", tag:"就业",
+   title:"秋招冲刺：选三门「能当作品集」的课",
+   author:{n:"周", name:"周", sub:"软件工程 · 3 年级 · 秋招已上岸"},
+   hours:10, grade:[84,93], saves:157, copies:52, weeks:18,
+   why:"大三下不要跟课程较劲，要让<strong>每门课都产出一样能放进作品集的东西</strong>。推荐系统的大作业就是秋招项目，软件测试和实习面试的测试岗内容高度重合。",
+   risk:"创新创业基础是全点名，别为了 1 学分丢出勤分。",
+   result:"三门课产出两个作品，秋招拿到两个 offer。",
+   unfit:"打算考研的人：这条路径对初试几乎零帮助。",
+   courses:["rec","st","cc","ie"]},
+];
+
+const GOALS = ["保研","就业","科研","转专业","稳绩点","实习"];
+const GOAL_LABEL = {"保研":"保研冲绩点","就业":"就业 / 找工作","科研":"科研打底","转专业":"转专业补课","稳绩点":"稳住不挂","实习":"腾时间实习"};
+
+/* 周学时统一由课程表推导，避免作者自报与课表不一致 */
+PATHS.forEach(p=>{ p.hours = p.courses.reduce((a,id)=>a+LIB[id].h,0); });
+
+/* ============ 状态 ============ */
+const S = {screen:"intake", goal:null, hours:20, detail:null, saved:[], draft:[]};
+
+/* ============ 工具 ============ */
+const $ = (id)=>document.getElementById(id);
+const esc = (s)=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const P = (id)=>PATHS.find(p=>p.id===id);
+const C = (id)=>LIB[id];
+
+function sim(p){
+  let s = 42;
+  if(p.goals.includes(S.goal)) s += 33;
+  s += Math.max(0, 22 - Math.abs(p.hours - S.hours) * 3);
+  s += Math.min(5, p.copies / 40);
+  return Math.min(98, Math.round(s));
+}
+function dayName(d){return "周"+"一二三四五"[d-1];}
+function slotText(c){
+  const m = {};
+  c.slots.forEach(([d,p])=>{(m[d]=m[d]||[]).push(p);});
+  return Object.keys(m).map(d=>dayName(+d)+" "+m[d].sort((a,b)=>a-b).join("/")).join(" · ");
+}
+function pathCredits(p){return p.courses.reduce((a,id)=>a+C(id).c,0);}
+function pathHours(p){return p.courses.reduce((a,id)=>a+C(id).h,0);}
+
+function toast(msg){
+  const t = $("toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("on"), 1900);
+}
+function openSheet(){ $("mask").classList.add("on"); $("sheet").classList.add("on"); }
+function closeSheet(){ $("mask").classList.remove("on"); $("sheet").classList.remove("on"); }
+
+/* ============ 渲染 ============ */
+function shell(top, body, dock){
+  $("app").innerHTML = `<div class="topbar">${top}</div>
+    <div class="scroll" id="scroll">${body}</div>
+    <div class="dock ${dock?'':'hide'}" id="dock">${dock||""}</div>`;
+}
+const TOP_BRAND = `<div class="brand"><i></i>课路<span>COURSEPATH</span></div>`;
+
+function go(screen, opts){
+  S.screen = screen;
+  if(opts && opts.id) S.detail = opts.id;
+  window[("render_"+screen)]();
+  const sc = $("scroll"); if(sc) sc.scrollTop = 0;
+}
+
+/* ---- 首屏 ---- */
+function render_intake(){
+  const chips = GOALS.map(g=>`<button class="chip ${S.goal===g?"on":""}" onclick="pickGoal('${g}')">${GOAL_LABEL[g]}</button>`).join("");
+  const body = `
+    <div class="hero">
+      <div class="kicker">Track 02 · Reverse Product Innovation</div>
+      <h1>这学期，<br>你想拿到什么？</h1>
+      <p class="lede">不用先想选哪门课。先说你要什么，我们去找一条已经被别人走通过的路。</p>
+    </div>
+    <div class="sec-label"><span>01 目标</span><span>单选</span></div>
+    <div class="chips">${chips}</div>
+    <div class="sec-label"><span>02 每周可投入</span><span><b class="num" style="font-family:var(--mono);color:var(--ink)">${S.hours}</b> h</span></div>
+    <div class="slider-wrap">
+      <input type="range" min="10" max="28" step="1" value="${S.hours}" oninput="setHours(this.value)">
+      <div class="hint">≈ 每天 <b>${(S.hours/7).toFixed(1)}</b> 小时，不含上课时间。填低一点没关系，我们会告诉你哪条路径会超支。</div>
+    </div>
+    <div class="sec-label"><span>你会拿到什么</span><span>示例</span></div>
+    <div class="peek">
+      <div class="badge">稳绩点 · 大二上</div>
+      <div class="pt">稳住不挂：刻意少修一门，把周学时压到 16</div>
+      <div class="pm">5 门课 · 16 学分 · 每周 16h · 作者：橘子（同年级）</div>
+      <div class="pn">不是一条评价，是一份可以照着过的学期方案。每条路径都必须写清楚：<b style="color:var(--ink2)">这条不适合谁</b>。</div>
+    </div>
+    <div style="height:18px"></div>`;
+  const dock = `<button class="btn primary" ${S.goal?"":"disabled"} onclick="go('list')">${S.goal?"看看别人怎么排的 →":"先选一个目标"}</button>`;
+  shell(TOP_BRAND + `<button class="btn-ghost" onclick="openSheet()">方法</button>`, body, dock);
+}
+function pickGoal(g){ S.goal = g; render_intake(); }
+function setHours(v){ S.hours = +v; render_intake(); }
+
+/* ---- 列表 ---- */
+function render_list(){
+  const scored = PATHS.map(p=>({p, s:sim(p)})).sort((a,b)=>b.s-a.s);
+  const main = scored.filter(x=>x.p.goals.includes(S.goal));
+  const rest = scored.filter(x=>!x.p.goals.includes(S.goal)).slice(0,2);
+  const shown = main.map(x=>({p:x.p,s:x.s,adj:false})).concat(rest.map(x=>({p:x.p,s:x.s,adj:true})));
+
+  const cards = shown.map((x,i)=>{
+    const p = x.p, cr = pathCredits(p), hr = pathHours(p), over = hr > S.hours+2;
+    const chips = p.courses.slice(0,4).map(id=>`<span>${C(id).n}<em>${C(id).c}</em></span>`).join("")
+      + (p.courses.length>4?`<span>+${p.courses.length-4}<em>门</em></span>`:"");
+    return `<div class="card nb" style="animation-delay:${i*45}ms" onclick="go('detail',{id:'${p.id}'})">
+      <div class="top">
+        <div class="badge ${i===0?"best":""}">${i===0?"最匹配":(x.adj?"相邻目标":p.tag)}</div>
+        <div class="term">${p.term} · ${cr.toFixed(1)} 学分</div>
+      </div>
+      <h3>${esc(p.title)}</h3>
+      <div class="meta"><span>${esc(p.author.name)}</span><i class="dot"></i><span>${esc(p.author.sub.split(" · ")[0])}</span><i class="dot"></i><span>每周 ${hr}h</span></div>
+      <div class="cc">${chips}</div>
+      <div class="bar"><i class="${over?"over":""}" style="width:${Math.min(100, hr/28*100)}%"></i></div>
+      <div class="cardfoot">
+        <span>给分 <b>${p.grade[0]}–${p.grade[1]}</b> · 照抄 <b>${p.copies}</b></span>
+        <span class="sim"><s></s>${x.s}% 相似</span>
+      </div>
+    </div>`;
+  }).join("");
+
+  const body = `
+    <div class="list-head">
+      <div class="kicker">Match by situation, not popularity</div>
+      <h2>为「${GOAL_LABEL[S.goal]}」<br>找到 ${shown.length} 条路径</h2>
+      <p>按<strong style="color:var(--ink)">处境相似度</strong>排序，不按热度。所以排在第一条的，可能不是被照抄最多的那条。</p>
+    </div>
+    ${cards}
+    <div style="height:8px"></div>`;
+  const dock = `<button class="btn line" onclick="go('intake')">改目标</button>
+    <button class="btn dark" onclick="go('draft')">我的课表${S.draft.length?` (${S.draft.length})`:""}</button>`;
+  shell(`<button class="iconbtn" onclick="go('intake')">‹</button>` + TOP_BRAND + `<button class="btn-ghost" onclick="openSheet()">方法</button>`, body, dock);
+}
+
+/* ---- 详情 ---- */
+function render_detail(){
+  const p = P(S.detail) || PATHS[0];
+  const cr = pathCredits(p), hr = pathHours(p);
+  const rows = p.courses.map(id=>{
+    const c = C(id);
+    return `<div class="course">
+      <div class="cl"><span class="cn">${c.n}</span><span class="cc2">${c.c.toFixed(1)} 学分 · ${c.h}h</span></div>
+      <div class="fields">
+        <i>${c.t} 老师</i><i>${c.a}</i><i>${c.roll}</i>
+        <i class="${c.early?"warn":""}">${c.early?"有早八":"无早八"}</i>
+        <i>给分 ${c.g[0]}–${c.g[1]}</i><i>${slotText(c)}</i>
+      </div>
+      <div class="note">${c.note}</div>
+    </div>`;
+  }).join("");
+
+  const body = `
+    <div class="d-head">
+      <div class="badge">${p.tag} · ${p.term}</div>
+      <h2>${esc(p.title)}</h2>
+      <div class="author">
+        <div class="ava">${p.author.n}</div>
+        <div><div class="who">${esc(p.author.name)}</div><div class="sub">${esc(p.author.sub)}</div></div>
+      </div>
+      <div class="matchstrip">
+        <div>与你 <b>${sim(p)}%</b> 相似</div>
+        <div style="opacity:.35">|</div>
+        <div>作者每周投入 ${hr}h，你的预算 ${S.hours}h</div>
+      </div>
+      <div class="block">
+        <h4>为什么这样排</h4>
+        <p class="why">${p.why}</p>
+      </div>
+      <div class="block">
+        <h4>课表 · ${p.courses.length} 门 · ${cr.toFixed(1)} 学分 · 每周 ${hr}h</h4>
+        ${rows}
+      </div>
+      <div class="block">
+        <h4>避雷</h4>
+        <div class="box amber">${p.risk}</div>
+      </div>
+      <div class="block">
+        <h4>作者的结果</h4>
+        <div class="box plain">${p.result}</div>
+      </div>
+      <div class="block">
+        <h4>这条路径不适合谁</h4>
+        <div class="box red">${p.unfit}</div>
+      </div>
+      <div style="height:6px"></div>
+    </div>`;
+  const saved = S.saved.includes(p.id);
+  const dock = `<button class="btn line" onclick="save('${p.id}')">${saved?"已收藏":"收藏"}</button>
+    <button class="btn primary" onclick="copyPath('${p.id}')">照抄这条路径</button>`;
+  shell(`<button class="iconbtn" onclick="go('list')">‹</button>` + TOP_BRAND + `<button class="btn-ghost" onclick="openSheet()">方法</button>`, body, dock);
+}
+
+function save(id){
+  if(!S.saved.includes(id)) { S.saved.push(id); toast("已收藏 · 它还是草稿，不是决定"); }
+  else toast("已经在收藏夹里了");
+  render_detail();
+}
+function copyPath(id){
+  if(!S.draft.includes(id)) S.draft.push(id); else toast("这条已经在你的草案里");
+  go("draft");
+}
+
+/* ---- 草案 ---- */
+function render_draft(){
+  const ids = [...new Set(S.draft.flatMap(id=>P(id).courses))];
+  const terms = [...new Set(S.draft.map(id=>P(id).term))];
+  const cr = ids.reduce((a,id)=>a+C(id).c,0);
+  const hr = ids.reduce((a,id)=>a+C(id).h,0);
+  const early = ids.filter(id=>C(id).early).length;
+
+  // 冲突检测：按「课程对 + 星期」合并节次
+  const seen = {}; const pairs = {};
+  ids.forEach(id=>{
+    const c = C(id);
+    c.slots.forEach(([d,per])=>{
+      const k = d+"-"+per;
+      if(seen[k] && seen[k] !== c.n){
+        const key = seen[k]+"|"+c.n+"|"+d;
+        (pairs[key] = pairs[key] || {a:seen[k], b:c.n, d:d, ps:[]}).ps.push(per);
+      } else seen[k] = c.n;
+    });
+  });
+  const conflicts = Object.values(pairs);
+
+  const alerts = [];
+  if(terms.length>1) alerts.push(`<div class="box amber" style="margin-bottom:8px"><b>跨学期混排</b>　你正在把 ${terms.join(" / ")} 的路径混在一起，真实选课里这两件事不会同时发生。换一条同学期的路径再试。</div>`);
+  if(conflicts.length) {
+    alerts.push(`<div class="box red" style="margin-bottom:8px"><b>${conflicts.length} 处时间冲突</b>　${conflicts.map(c=>`${c.a} × ${c.b}（${dayName(c.d)} 第 ${c.ps.sort((a,b)=>a-b).join("/")} 节）`).join("；")}</div>`);
+  }
+  if(hr > S.hours) alerts.push(`<div class="box red" style="margin-bottom:8px"><b>周学时超支 ${hr-S.hours} 小时</b>　你声明每周只有 ${S.hours}h，这条组合需要 ${hr}h。超支的部分会从睡眠里扣。</div>`);
+  if(early >= 3) alerts.push(`<div class="box amber" style="margin-bottom:8px"><b>${early} 门早八</b>　按经验，早八超过 3 门时缺勤率会明显上升。</div>`);
+  if(cr < 15 && ids.length) alerts.push(`<div class="box amber" style="margin-bottom:8px"><b>学分偏低</b>　${cr.toFixed(1)} 学分低于常见的 15 学分进度线，注意毕业要求。</div>`);
+  if(!alerts.length) alerts.push(`<div class="box plain"><b>没有发现问题</b>　时间不冲突，周学时 ${hr}h 在你的预算内。</div>`);
+
+  const rows = ids.map(id=>{
+    const c = C(id);
+    const from = S.draft.filter(pid=>P(pid).courses.includes(id)).map(pid=>P(pid).tag);
+    return `<div class="row"><div class="l"><div class="n">${c.n}</div>
+      <div class="m">${c.t} 老师 · ${c.a} · ${slotText(c)}</div>
+      <div class="src">${from.map(f=>`<s>${f}</s>`).join("")}</div></div>
+      <div class="r"><b>${c.c.toFixed(1)}</b> 学分<br>${c.h}h</div></div>`;
+  }).join("");
+
+  const body = S.draft.length ? `
+    <div class="kicker">Draft timetable</div>
+    <h2 class="sect" style="margin-top:8px">我的课表草案</h2>
+    <p class="sub2">来自 ${S.draft.length} 条路径 · ${ids.length} 门课 · 学期 ${terms.join(" / ")}</p>
+    <div class="stats">
+      <div class="stat"><div class="v">${cr.toFixed(1)}</div><div class="k">学分</div></div>
+      <div class="stat ${hr>S.hours?"bad":""}"><div class="v">${hr}<small>/${S.hours}</small></div><div class="k">周学时</div></div>
+      <div class="stat"><div class="v">${early}</div><div class="k">早八</div></div>
+    </div>
+    ${alerts.join("")}
+    <div class="sec-label"><span>课程</span><span>${ids.length} 门</span></div>
+    <div class="dl" style="margin-top:4px">${rows}</div>
+    <div class="box plain" style="margin-bottom:60px">学期结束后，这条路径会请你回填一次：<b>给分区间准不准、作业量是不是被低估了</b>。只有被照抄过且完成回填的路径，才会被排到前面。</div>
+  ` : `
+    <div class="empty">
+      <div class="big">⌗</div>
+      <p>草案还是空的。<br>去路径列表里挑一条，点「照抄这条路径」。</p>
+      <button class="btn dark" style="width:auto;display:inline-block;padding:13px 22px" onclick="go('list')">去看路径</button>
+    </div>`;
+
+  const dock = S.draft.length
+    ? `<button class="btn line" onclick="clearDraft()">清空</button><button class="btn primary" onclick="toast('回填通道在期末周开放')">期末回填</button>`
+    : `<button class="btn primary" onclick="go('list')">去看路径</button>`;
+  shell(`<button class="iconbtn" onclick="go('${S.goal?"list":"intake"}')">‹</button>` + TOP_BRAND + `<button class="btn-ghost" onclick="openSheet()">方法</button>`, body, dock);
+}
+function clearDraft(){ S.draft = []; render_draft(); }
+
+/* ============ 启动（支持 #list / #detail=p1 / #draft=p1,p5 深链，便于演示与截图） ============ */
+(function boot(){
+  const h = decodeURIComponent(location.hash.replace(/^#/, ""));
+  if(!h) return render_intake();
+  const i = h.indexOf("=");
+  const k = i < 0 ? h : h.slice(0, i);
+  const v = i < 0 ? "" : h.slice(i + 1);
+  if(k === "list"){ S.goal = v || "保研"; return go("list"); }
+  if(k === "detail"){ S.goal = "保研"; S.detail = v || "p1"; return go("detail"); }
+  if(k === "draft"){ S.goal = "保研"; S.draft = (v || "p1,p5").split(",").filter(Boolean); return go("draft"); }
+  if(k === "sheet"){ S.goal = "保研"; go("list"); return openSheet(); }
+  render_intake();
+})();
+</script>
+</body>
+</html>

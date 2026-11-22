@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>反编译实验室 · 作品入口</title>
+<style>
+:root{
+  --bg:#07080B; --line:#1B1F29; --line2:#262B37; --ink:#ECEDF1; --dim:#7C8494; --dim2:#565E6E;
+  --lime:#B8FF3C; --violet:#7B61FF;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;
+  background-image:radial-gradient(900px 600px at 80% -10%,rgba(123,97,255,.16),transparent 62%),
+                   radial-gradient(700px 500px at 6% 110%,rgba(184,255,60,.07),transparent 60%),
+                   linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:auto,auto,72px 72px,72px 72px;
+  display:flex;align-items:center;justify-content:center;padding:40px 20px;
+  -webkit-font-smoothing:antialiased}
+.wrap{width:100%;max-width:980px}
+.k{font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;color:var(--dim2);text-transform:uppercase}
+h1{font-size:clamp(34px,5vw,54px);line-height:1.2;letter-spacing:-.035em;margin:18px 0 12px;font-weight:800}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--lime),#63F0C8 55%,var(--violet));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+p.lede{margin:0 0 38px;font-size:15px;line-height:1.85;color:#A8AFBD;max-width:62ch}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+a.card{
+  display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:18px;
+  padding:26px 26px 22px;background:rgba(255,255,255,.02);transition:.2s;position:relative;overflow:hidden;
+}
+a.card:hover{border-color:rgba(184,255,60,.4);transform:translateY(-2px);background:rgba(184,255,60,.04)}
+a.card .no{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--lime)}
+a.card h2{font-size:21px;margin:12px 0 8px;letter-spacing:-.01em}
+a.card p{margin:0;font-size:12.5px;line-height:1.8;color:var(--dim)}
+a.card .go{display:inline-block;margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--lime)}
+.foot{margin-top:30px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--dim2);line-height:2}
+.sitemap{margin-top:26px;border-top:1px solid var(--line);padding-top:20px}
+.sm-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--dim2);text-transform:uppercase;margin-bottom:12px}
+.sm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px 18px}
+@media(max-width:760px){.sm-grid{grid-template-columns:1fr 1fr}}
+.sm-grid a{font-size:12px;color:var(--dim);text-decoration:none;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);transition:.16s}
+.sm-grid a:hover{color:var(--lime)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="k">Reverse Product Innovation · 2026</div>
+  <h1>反编译<em>实验室</em></h1>
+  <p class="lede">
+    先拆机制，再换分母。这套方法产出了两件东西：一组 30 秒能玩完的机制原型，
+    和一个真的落到场景里的产品。
+  </p>
+  <div class="grid">
+    <a class="card" href="Decompiler/">
+      <div class="no">LAB · 01</div>
+      <h2>反编译实验室 · 五个装置</h2>
+      <p>行动盲盒 / 自我回音壁 / 悬念阻断器 / 反内卷契约 / 认知清理器。五个被劫持的心理机制，全部可交互，图像现场生成。</p>
+      <span class="go">进入实验室 →</span>
+    </a>
+    <a class="card" href="Track2_ClassPath/prototype/">
+      <div class="no">CASE · 02</div>
+      <h2>ClassPath 课路</h2>
+      <p>把「刷学长学姐经验」这条信息流，换成「一条可以照抄的选课路径」。含冲突检测与学时护栏。</p>
+      <span class="go">打开原型 →</span>
+    </a>
+  </div>
+  <div class="foot">
+    LOCAL DEMO · 本页由一个静态服务器提供，同一局域网内可直接访问<br>
+    如需公开链接，见 README 里的隧道说明
+  </div>
+
+  <div class="sitemap">
+    <div class="sm-k">SITE MAP · 13 页</div>
+    <div class="sm-grid">
+      <a href="Decompiler/">实验室主页</a>
+      <a href="Decompiler/method.html">方法 · 判据打分器</a>
+      <a href="Decompiler/devices/">装置库 · 五个装置</a>
+      <a href="Decompiler/archive/">档案库 · 6 份</a>
+      <a href="Decompiler/archive/xiaohongshu.html">A-01 小红书</a>
+      <a href="Decompiler/archive/gacha.html">A-02 盲盒 / 抽卡</a>
+      <a href="Decompiler/archive/douyin.html">A-03 抖音</a>
+      <a href="Decompiler/archive/duolingo.html">A-04 多邻国</a>
+      <a href="Decompiler/archive/pinduoduo.html">A-05 拼多多</a>
+      <a href="Decompiler/archive/xianyu.html">A-06 闲鱼</a>
+      <a href="Decompiler/case.html">案例 ClassPath</a>
+      <a href="Decompiler/sound.html">声音 · 声音板</a>
+      <a href="Decompiler/about.html">关于 · 边界</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

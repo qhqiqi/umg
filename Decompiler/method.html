@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>方法 · 拆、换、验 — 反编译实验室</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topnav">
+    <a class="brand" href="index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="method.html" class="on">方法</a>
+      <a href="devices/">装置</a>
+      <a href="archive/">档案</a>
+      <a href="case.html">案例</a>
+      <a href="sound.html">声音</a>
+      <a href="about.html">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="index.html">实验室</a><s>/</s><b>方法</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">Method · 拆 / 换 / 验</div>
+    <h1>三步，把上瘾<br><em>反编译</em>成解药。</h1>
+    <p class="lede">
+      逆向产品创新最容易翻车的地方，是把对方的<b>皮</b>抄过来——配色、动效、无限流。
+      真正该抄的是<b>分子</b>：那套让人停不下来的心理机制。我们只把它接到另一个分母上。
+    </p>
+    <div class="meta-row">
+      <div class="m"><div class="k">Input</div><div class="v">一个"忍不住要用"的产品</div></div>
+      <div class="m"><div class="k">Output</div><div class="v">一条可迁移的价值公式</div></div>
+      <div class="m"><div class="k">Test</div><div class="v">五个判据，25 分制</div></div>
+    </div>
+  </section>
+
+  <div class="sec"><span class="no">01</span><h2>先看清分子和分母</h2><span class="hint">one equation</span></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="no">ADDICTION</div>
+      <h3>上瘾 = 分子 / 平台获益</h3>
+      <p>不可预测的奖励 × 被删除的退出决策点，除以你的钱、时间、注意力。分子越强，留存越高。</p>
+      <div class="row"><span class="tag red">分子：心理机制</span><span class="tag">分母：谁收钱</span></div>
+    </div>
+    <div class="card">
+      <div class="no">ANTIDOTE</div>
+      <h3>解药 = 分子 / 你获益</h3>
+      <p>同一个分子，一分不改；只把分母的收款方从平台换成用户。机制没变强也没变弱，方向变了。</p>
+      <div class="row"><span class="tag lime">同样是那套机制</span><span class="tag lime">收款方换人</span></div>
+    </div>
+  </div>
+
+  <div class="prose" style="margin-top:22px">
+    <p>
+      为什么是除法不是加法？因为<b>分子为零时，产品没有任何粘性</b>；分母为零时，用户得不到任何东西。
+      两者是乘除关系，不是并列关系。这条结构解释了为什么"加一点激励"救不活一个没有机制的產品。
+    </p>
+  </div>
+
+  <div class="sec"><span class="no">02</span><h2>三个动作</h2><span class="hint">decompile → rebind → verify</span></div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="no">STEP 01</div>
+      <h3>拆：找到那一个机制</h3>
+      <p>不要写"它很上瘾"，要写"它靠哪一个机制上瘾"。斯金纳箱、FOMO、悬念、损失厌恶、完成强迫——一次只认一个。</p>
+    </div>
+    <div class="card">
+      <div class="no">STEP 02</div>
+      <h3>换：只换分母</h3>
+      <p>保留触发、保留反馈、保留节奏，把"支付货币"换成对用户有利的东西：行动、专注、守信、秩序。</p>
+    </div>
+    <div class="card">
+      <div class="no">STEP 03</div>
+      <h3>验：用判据打分</h3>
+      <p>五个判据打分，满分 25。低于 18 分说明这个场景撑不起产品，换场景，别硬做。</p>
+    </div>
+  </div>
+
+  <div class="sec"><span class="no">03</span><h2>动手打分：这个场景值不值得做</h2><span class="hint">interactive · 25 分制</span></div>
+
+  <div class="scorer">
+    <div class="srow">
+      <div class="k">① 紧迫度<small>决定必须在有限时间内做出</small></div>
+      <input type="range" min="1" max="5" value="4" oninput="score(this)">
+      <div class="v" id="v0">4</div>
+    </div>
+    <div class="srow">
+      <div class="k">② 非标信息<small>答案因人而异，没有统一标准</small></div>
+      <input type="range" min="1" max="5" value="5" oninput="score(this)">
+      <div class="v" id="v1">5</div>
+    </div>
+    <div class="srow">
+      <div class="k">③ 官方缺位<small>官方只给字段，不给判断</small></div>
+      <input type="range" min="1" max="5" value="5" oninput="score(this)">
+      <div class="v" id="v2">5</div>
+    </div>
+    <div class="srow">
+      <div class="k">④ 经验散落<small>经验海量存在，但不可检索</small></div>
+      <input type="range" min="1" max="5" value="4" oninput="score(this)">
+      <div class="v" id="v3">4</div>
+    </div>
+    <div class="srow">
+      <div class="k">⑤ 可被照做<small>结论能被直接执行，不只是被理解</small></div>
+      <input type="range" min="1" max="5" value="5" oninput="score(this)">
+      <div class="v" id="v4">5</div>
+    </div>
+
+    <div class="score-out">
+      <div class="big" id="total">23<small>/25</small></div>
+      <div class="verdict" id="verdict">可以立项。这组分数对应我们的案例 01（高校选课）：高紧迫、强非标、官方只给课名和学分。</div>
+    </div>
+  </div>
+  <p class="muted" style="margin-top:14px">默认值是 ClassPath 的实测打分。拖动滑杆看不同场景的结论。</p>
+
+  <div class="sec"><span class="no">04</span><h2>反面对照：什么时候"抄错了"</h2><span class="hint">the only test</span></div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th style="width:22%">形态</th><th style="width:26%">E / S</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td><b>教程站</b></td><td><span class="mono">E 高 · S 低</span></td><td>看完就走，没有回访理由。用户学会了，产品被抛弃了。</td></tr>
+        <tr><td><b>吐槽社区</b></td><td><span class="mono">E 低 · S 高</span></td><td>情绪消费完就散，留下的是噪声，不是可执行的判断。</td></tr>
+        <tr><td><b>可迁移的部分</b></td><td><span class="mono">E 高 · S 高</span></td><td>用户既信"他和我像"，又信"我能照着做"。这才是分子的正确接口。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="no">05</span><h2>五种常见的失败模式</h2><span class="hint">post-mortem</span></div>
+
+  <div class="grid-2">
+    <div class="callout red"><span class="lb">FAIL 01</span><b>把机制抄成了皮。</b>复制了无限流和红点，却没换分母——结果只是造了一个更小的上瘾产品。</div>
+    <div class="callout amber"><span class="lb">FAIL 02</span><b>分母换得太贵。</b>要求用户每天跑 5 公里才能解锁，动机强度撑不过三天。奖励必须近在眼前。</div>
+    <div class="callout amber"><span class="lb">FAIL 03</span><b>用羞耻驱动。</b>失败惩罚做成公开羞辱，短期有效，长期流失。</div>
+    <div class="callout red"><span class="lb">FAIL 04</span><b>假装能验证。</b>把"自觉勾选"说成"图像识别"，一被追问就露馅。</div>
+  </div>
+
+  <div class="pager">
+    <a href="index.html"><span class="k">← Back</span><span class="n">实验室主页</span></a>
+    <a class="right" href="devices/"><span class="k">Next →</span><span class="n">五个装置</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">THE DECOMPILER · METHOD<br>拆 → 换 → 验 · v2</div>
+    <div class="f" style="text-align:right"><a href="index.html">返回实验室</a></div>
+  </footer>
+</div>
+
+<script>
+function score(el){
+  const rows = document.querySelectorAll(".srow input[type=range]");
+  let sum = 0;
+  rows.forEach((r, i)=>{
+    document.getElementById("v"+i).textContent = r.value;
+    sum += +r.value;
+  });
+  document.getElementById("total").innerHTML = sum + '<small>/25</small>';
+  const v = document.getElementById("verdict");
+  if(sum >= 22){
+    v.innerHTML = "可以立项，而且值得做成完整产品。分数越高，说明这个场景越像「决策外包」的典型现场。";
+  } else if(sum >= 18){
+    v.innerHTML = "可以做，但要缩小范围：先把一个高紧迫的子场景做穿，别一上来就做全场景。";
+  } else if(sum >= 13){
+    v.innerHTML = "勉强能做，但它更像内容而不是工具——用户看完就走，不会回来第二次。";
+  } else {
+    v.innerHTML = "不建议做。这组分数说明场景不成立：要么不紧迫，要么结论不可执行。换场景，别加功能。";
+  }
+}
+</script>
+</body>
+</html>
