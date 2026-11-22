@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>机制测验 · 你被什么抓住 — 反编译实验室</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.qbar{display:flex;align-items:center;gap:10px;margin:26px 0 20px}
+.qbar .track{flex:1;height:3px;background:var(--line);border-radius:3px;overflow:hidden}
+.qbar .track b{display:block;height:100%;width:0;background:var(--lime);transition:width .35s cubic-bezier(.2,.9,.2,1)}
+.qbar .n{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--dim2)}
+.qcard{border:1px solid var(--line);border-radius:18px;padding:30px 30px 26px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.006))}
+.qcard h2{font-size:24px;line-height:1.45;letter-spacing:-.02em;margin:0 0 22px;font-weight:700}
+.opt{
+  display:block;width:100%;text-align:left;border:1px solid var(--line2);border-radius:12px;
+  background:transparent;color:#B9C0CD;font:inherit;font-size:14px;line-height:1.7;padding:15px 18px;
+  margin-bottom:10px;cursor:pointer;transition:.16s;
+}
+.opt:hover{border-color:rgba(184,255,60,.45);background:rgba(184,255,60,.05);color:var(--ink)}
+.opt:active{transform:scale(.995)}
+.result{display:none}
+.result.on{display:block;animation:rise .55s cubic-bezier(.2,.9,.2,1) both}
+.rhead{border:1px solid var(--line);border-radius:18px;padding:30px;background:
+  radial-gradient(600px 300px at 85% 0%,rgba(184,255,60,.08),transparent 60%),rgba(255,255,255,.02)}
+.rhead .k{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--lime)}
+.rhead h2{font-size:30px;margin:12px 0 10px;letter-spacing:-.03em}
+.rhead p{margin:0;font-size:14.5px;line-height:1.9;color:#AEB5C4}
+.bars{margin:26px 0}
+.bar-row{display:grid;grid-template-columns:110px 1fr 34px;gap:12px;align-items:center;padding:7px 0;font-size:12.5px;color:var(--dim)}
+.bar-row .t{font-family:var(--mono);font-size:10px;letter-spacing:.1em}
+.bar-row .track{height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar-row .track b{display:block;height:100%;background:var(--violet);width:0;transition:width .8s cubic-bezier(.2,.9,.2,1)}
+.bar-row.top .t,.bar-row.top .v{color:var(--lime)}
+.bar-row.top .track b{background:var(--lime)}
+.bar-row .v{font-family:var(--mono);text-align:right;color:var(--ink2)}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+@media(max-width:760px){.rgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-page="quiz">
+<div class="wrap">
+
+  <header class="topnav">
+    <a class="brand" href="index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="method.html">方法</a>
+      <a href="devices/">装置</a>
+      <a href="archive/">档案</a>
+      <a href="quiz.html" class="on">测验</a>
+      <a href="workbench.html">工作台</a>
+      <a href="case.html">案例</a>
+      <a href="sound.html">声音</a>
+      <a href="about.html">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="index.html">实验室</a><s>/</s><b>机制测验</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">Quiz · 6 questions</div>
+    <h1>你被<em>哪种机制</em><br>抓住了？</h1>
+    <p class="lede">
+      六道情景题，没有对错。做完会告诉你：你的注意力主要被哪一个回路劫持，
+      以及对应的那个装置该怎么做。全程在本地算，不上传。
+    </p>
+  </section>
+
+  <div class="qbar">
+    <span class="n" id="qno">01 / 06</span>
+    <div class="track"><b id="qprog"></b></div>
+  </div>
+
+  <div id="stage"></div>
+
+  <div class="pager">
+    <a href="devices/"><span class="k">← Devices</span><span class="n">五个装置</span></a>
+    <a class="right" href="workbench.html"><span class="k">Next →</span><span class="n">逆向工作台</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">THE DECOMPILER · QUIZ<br>结果只存在你的浏览器里</div>
+    <div class="f" style="text-align:right"><a href="index.html">返回实验室</a></div>
+  </footer>
+</div>
+
+<script>
+const MECH = {
+  random:{name:"可变比率", short:"随机", diag:"你被「下一次可能更好」抓住。",
+    detail:"奖励不可预测时，多巴胺在「预期」里释放，而不是在「获得」时。所以真正让人上瘾的不是奖品，是抽之前那三秒。",
+    device:"01 行动盲盒", fix:"把随机性挪到「奖励长什么样」，绝不挪到「你能不能拿到」。",
+    rx:"现在做一个 30 秒的真实动作，然后领取一个盲盒——奖励 100% 到手。"},
+  social:{name:"社交认同", short:"社交", diag:"你被「别人怎么看我」抓住。",
+    detail:"点赞与回复是间歇性强化：你不知道下一次回应什么时候来，于是不断刷新。可怕的是，它把自我评价外包给了别人。",
+    device:"02 自我回音壁", fix:"刷新之前，先写一句只给自己看的话。",
+    rx:"写下此刻真实的一句，再刷新——你会看到自己的情绪，而不是别人的生活。"},
+  cliff:{name:"悬念", short:"悬念", diag:"你被「还没结束」抓住。",
+    detail:"自动连播把「要不要看下一集」这个决策点删掉了。你以为是自己在追，其实是结构在推。",
+    device:"03 悬念阻断器", fix:"把「必须继续」换成「必须先专注」。",
+    rx:"读第一幕，然后专注 45 秒——下一幕的钥匙是一段不被打断的时间。"},
+  loss:{name:"损失厌恶", short:"损失", diag:"你被「错过就没了」抓住。",
+    detail:"倒计时把「错过」变成了生理性的焦虑。人对损失的敏感度大约是同等收益的两倍，所以限时永远有效。",
+    device:"04 反内卷契约", fix:"把倒计时从「抢购」改成「守信」。",
+    rx:"签一份 90 秒的契约，守住它——失败不扣钱，只留一张难看的证据。"},
+  comp:{name:"完成强迫", short:"红点", diag:"你被「未读 / 未完成」抓住。",
+    detail:"未完成的任务会在记忆里留下张力（蔡格尼克效应）。红点不是在提醒你，是在替你决定「现在必须处理」。",
+    device:"05 认知清理器", fix:"把红点从屏幕搬到现实里。",
+    rx:"拍下你的乱，然后清掉四块真实的区域——屏幕上会跟着少一块噪点。"}
+};
+
+const QS = [
+  {q:"早上睁眼后的 60 秒，你大概率在做：", o:[
+    ["刷推荐流，看有没有新鲜的","random"],
+    ["看有没有人回我（消息、点赞）","social"],
+    ["把昨天没看完的那集接着看","cliff"],
+    ["看限时秒杀 / 签到还剩多少时间","loss"],
+    ["清掉图标上的红点","comp"]]},
+  {q:"排队 3 分钟，你的手会：", o:[
+    ["抽一发、开一个，反正闲着","random"],
+    ["刷新朋友圈或群聊","social"],
+    ["把剧集进度往后拖，哪怕只看 30 秒","cliff"],
+    ["看看购物车里的东西降没降价","loss"],
+    ["把相册里重复的照片删一删","comp"]]},
+  {q:"最让你停不下来的瞬间是：", o:[
+    ["差一点点就出好东西","random"],
+    ["有人正在回复我","social"],
+    ["就差最后一集 / 最后一章","cliff"],
+    ["倒计时还剩 2 分钟","loss"],
+    ["还有 3 个未读","comp"]]},
+  {q:"关掉 App 之后，你常有的感觉是：", o:[
+    ["空，还有点想再来一次","random"],
+    ["有点被冷落","social"],
+    ["悬着，没着落","cliff"],
+    ["怕错过了什么","loss"],
+    ["烦，因为还有没处理完的","comp"]]},
+  {q:"你最容易为什么付费：", o:[
+    ["抽一次 / 开一次（赌一把）","random"],
+    ["会员或标识（让别人看见我）","social"],
+    ["下一集 / 下一章（等不及）","cliff"],
+    ["限时折扣（再不买就没了）","loss"],
+    ["整理 / 效率类工具（把东西收干净）","comp"]]},
+  {q:"如果只能删一个功能，你最舍不得：", o:[
+    ["抽奖 / 开箱","random"],
+    ["点赞与评论","social"],
+    ["自动连播","cliff"],
+    ["倒计时与限时","loss"],
+    ["未读提醒与小红点","comp"]]}
+];
+
+let i = 0;
+const score = {random:0, social:0, cliff:0, loss:0, comp:0};
+
+function render(){
+  const s = document.getElementById("stage");
+  document.getElementById("qno").textContent = String(i+1).padStart(2,"0") + " / 06";
+  document.getElementById("qprog").style.width = (i/6*100) + "%";
+  if(i >= QS.length){ return showResult(); }
+  const q = QS[i];
+  s.innerHTML = `<div class="qcard reveal">
+      <h2>${q.q}</h2>
+      ${q.o.map(([txt,key]) => `<button class="opt" data-k="${key}">${txt}</button>`).join("")}
+    </div>`;
+  s.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+    score[b.dataset.k]++; i++; render();
+  }));
+}
+
+function showResult(){
+  document.getElementById("qprog").style.width = "100%";
+  document.getElementById("qno").textContent = "06 / 06";
+  const sorted = Object.entries(score).sort((a,b) => b[1]-a[1]);
+  const top = sorted[0][0];
+  const m = MECH[top];
+  const max = Math.max(1, sorted[0][1]);
+  const s = document.getElementById("stage");
+  s.innerHTML = `
+    <div class="result on">
+      <div class="rhead">
+        <div class="k">YOUR RESULT · ${m.name}</div>
+        <h2>${m.diag}</h2>
+        <p>${m.detail}</p>
+      </div>
+
+      <div class="bars">
+        ${sorted.map(([k,v]) => `
+          <div class="bar-row ${k===top?"top":""}">
+            <span class="t">${MECH[k].short}</span>
+            <div class="track"><b data-w="${(v/max*100).toFixed(0)}"></b></div>
+            <span class="v">${v}</span>
+          </div>`).join("")}
+      </div>
+
+      <div class="rgrid">
+        <div class="card">
+          <div class="no">对应的装置</div>
+          <h3>${m.device}</h3>
+          <p>${m.fix}</p>
+          <a class="go" href="index.html#m${["random","social","cliff","loss","comp"].indexOf(top)+1}">现在试一次 →</a>
+        </div>
+        <div class="card">
+          <div class="no">30 秒处方</div>
+          <h3>今天就做一件</h3>
+          <p>${m.rx}</p>
+          <a class="go" href="workbench.html">用它做一张设计卡 →</a>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+        <button class="btn lime" onclick="restart()">再测一次</button>
+        <button class="btn" onclick="copyRes('${top}')">复制结果</button>
+      </div>
+    </div>`;
+
+  requestAnimationFrame(() => {
+    s.querySelectorAll(".bar-row .track b").forEach(b => { b.style.width = b.dataset.w + "%"; });
+  });
+}
+
+function restart(){
+  i = 0; Object.keys(score).forEach(k => score[k] = 0); render();
+}
+function copyRes(top){
+  const m = MECH[top];
+  const txt = `我的注意力主劫持机制：${m.name}（${m.diag}）\n对应装置：${m.device}\n—— 反编译实验室`;
+  navigator.clipboard.writeText(txt).then(
+    () => alert("已复制，可以直接发给朋友：\n\n" + txt),
+    () => alert(txt)
+  );
+}
+
+render();
+</script>
+<script src="assets/explore.js"></script>
+</body>
+</html>

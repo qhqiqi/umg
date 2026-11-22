@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>逆向工作台 · 三步生成一张设计卡 — 反编译实验室</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.wb{display:grid;grid-template-columns:1fr 460px;gap:26px;align-items:start}
+@media(max-width:1000px){.wb{grid-template-columns:1fr}}
+.step{margin-bottom:26px}
+.step .h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.step .h b{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--lime)}
+.step .h span{font-size:14px;color:var(--ink2)}
+.step .h i{margin-left:auto;font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--dim2)}
+.fieldline{display:flex;gap:8px;flex-wrap:wrap}
+.opt{
+  border:1px solid var(--line2);background:transparent;color:#A8AFBD;font:inherit;font-size:12.5px;
+  padding:9px 14px;border-radius:999px;cursor:pointer;transition:.16s;
+}
+.opt:hover{border-color:#39404F;color:var(--ink)}
+.opt.on{border-color:var(--lime);color:var(--lime);background:rgba(184,255,60,.08)}
+input.txt{
+  width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;color:var(--ink);
+  font:inherit;font-size:13px;padding:12px 14px;outline:none;margin-top:10px;
+}
+input.txt:focus{border-color:rgba(184,255,60,.45)}
+
+.card3{border:1px solid var(--line2);border-radius:18px;overflow:hidden;background:
+  radial-gradient(500px 260px at 90% -10%,rgba(123,97,255,.14),transparent 62%),rgba(255,255,255,.02);
+  position:sticky;top:20px}
+@media(max-width:1000px){.card3{position:static}}
+.card3 .top{padding:22px 24px 18px;border-bottom:1px solid var(--line)}
+.card3 .badge{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--lime)}
+.card3 h3{font-size:21px;line-height:1.45;letter-spacing:-.02em;margin:10px 0 0}
+.card3 .body{padding:20px 24px}
+.row3{display:grid;grid-template-columns:78px 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:12.8px;line-height:1.7}
+.row3:first-child{border-top:none}
+.row3 .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--dim2);padding-top:3px}
+.row3 .v b{color:var(--ink);font-weight:600}
+.pitch{margin:14px 0 6px;padding:14px 16px;border-left:2px solid var(--lime);background:rgba(184,255,60,.05);
+  font-size:13px;line-height:1.85;color:#C9CFDA;border-radius:0 10px 10px 0}
+.checks{margin:0;padding-left:18px;font-size:12.5px;line-height:1.8;color:#B9C0CD}
+.checks li{margin-bottom:6px}
+.checks li::marker{color:var(--lime)}
+.actions{display:flex;gap:8px;padding:0 24px 22px;flex-wrap:wrap}
+</style>
+</head>
+<body data-page="workbench">
+<div class="wrap">
+
+  <header class="topnav">
+    <a class="brand" href="index.html"><span class="mark"></span><span><b>反编译实验室</b><i>The Decompiler</i></span></a>
+    <nav class="navlinks">
+      <a href="method.html">方法</a>
+      <a href="devices/">装置</a>
+      <a href="archive/">档案</a>
+      <a href="quiz.html">测验</a>
+      <a href="workbench.html" class="on">工作台</a>
+      <a href="case.html">案例</a>
+      <a href="sound.html">声音</a>
+      <a href="about.html">关于</a>
+    </nav>
+  </header>
+
+  <div class="crumb"><a href="index.html">实验室</a><s>/</s><b>逆向工作台</b></div>
+
+  <section class="pagehead">
+    <div class="kicker">Workbench · 三步</div>
+    <h1>选三个东西，<br>换出一张<em>设计卡</em>。</h1>
+    <p class="lede">
+      这套方法不需要灵感，只需要三个输入：<b>逆向谁</b>、<b>保哪个机制</b>、<b>把货币换成什么</b>。
+      右边会实时长出一张卡，可以复制走。
+    </p>
+  </section>
+
+  <div class="wb">
+    <div>
+      <div class="step">
+        <div class="h"><b>STEP 01</b><span>逆向对象</span><i>谁在抓住人</i></div>
+        <div class="fieldline" id="obj"></div>
+        <input class="txt" id="objCustom" placeholder="或者自己写一个：例如「考研自习室的打卡榜」">
+      </div>
+
+      <div class="step">
+        <div class="h"><b>STEP 02</b><span>保留哪个机制</span><i>分子，一分不改</i></div>
+        <div class="fieldline" id="mech"></div>
+      </div>
+
+      <div class="step">
+        <div class="h"><b>STEP 03</b><span>把货币换成什么</span><i>分母，换收款人</i></div>
+        <div class="fieldline" id="cur"></div>
+      </div>
+
+      <div class="step">
+        <div class="h"><b>STEP 04</b><span>给谁用</span><i>越具体越好</i></div>
+        <input class="txt" id="who" placeholder="例如：大三准备考研、每天只剩两小时的人">
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn lime" onclick="randomize()">随机组合一个</button>
+        <button class="btn" onclick="reset()">清空重来</button>
+      </div>
+    </div>
+
+    <aside class="card3" id="card">
+      <div class="top">
+        <div class="badge">DESIGN CARD · LIVE</div>
+        <h3 id="ttl">先选一个对象</h3>
+      </div>
+      <div class="body" id="cardBody"></div>
+      <div class="actions">
+        <button class="btn lime" onclick="copyCard()">复制这张卡</button>
+        <button class="btn" onclick="downloadCard()">下载 .txt</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="pager">
+    <a href="quiz.html"><span class="k">← Quiz</span><span class="n">机制测验</span></a>
+    <a class="right" href="devices/"><span class="k">Next →</span><span class="n">五个装置</span></a>
+  </div>
+
+  <footer class="foot">
+    <div class="f">THE DECOMPILER · WORKBENCH<br>本地生成，不上传</div>
+    <div class="f" style="text-align:right"><a href="index.html">返回实验室</a></div>
+  </footer>
+</div>
+
+<script>
+const OBJS = ["短视频平台","抽卡 / 盲盒","电商秒杀","社交信息流","打卡学习 App","网文连载","外卖平台","相亲 / 交友"];
+const MECHS = {
+  "随机奖励":{del:"要不要再抽一次", law:"随机性只留在「奖励长什么样」，绝不留在「能不能拿到」", risk:"一旦随机决定获得与否，它立刻变回赌场"},
+  "社交认同":{del:"要不要再看一眼有没有人理我", law:"先产出自己的东西，才允许刷新", risk:"做成公开榜单就会退化成比较，FOMO 会回来"},
+  "悬念":{del:"要不要看下一集", law:"下一段的钥匙必须是一段不被打断的时间", risk:"如果解锁太贵，用户会直接放弃故事"},
+  "损失厌恶":{del:"要不要现在买", law:"倒计时改成「和对自己的承诺对赌」，失败只留证据不扣钱", risk:"用公开羞辱做惩罚，短期有效、长期流失"},
+  "完成强迫":{del:"要不要现在处理", law:"把「未读」从屏幕搬到现实，清一块少一块", risk:"不要制造新的虚拟红点，只是换了个 App 数红点"}
+};
+const CURS = ["真实行动","专注","守信","秩序","自我叙述","睡眠"];
+
+const S = {obj:"", mech:"", cur:"", who:""};
+
+function chips(el, list, key, cls){
+  el.innerHTML = list.map(v => `<button class="opt ${S[key]===v?"on":""}" data-v="${v}">${v}</button>`).join("");
+  el.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+    S[key] = b.dataset.v;
+    chips(el, list, key);
+    if(key === "obj"){ document.getElementById("objCustom").value = ""; }
+    render();
+  }));
+}
+
+function render(){
+  const custom = document.getElementById("objCustom").value.trim();
+  const obj = custom || S.obj;
+  const m = MECHS[S.mech];
+  const ttl = document.getElementById("ttl");
+  const body = document.getElementById("cardBody");
+
+  if(!obj || !S.mech || !S.cur){
+    ttl.textContent = obj ? (S.mech ? "还差「货币」" : "再选一个机制") : "先选一个对象";
+    body.innerHTML = `<div class="row3"><div class="k">提示</div><div class="v">三个输入都齐了，这张卡才会成立。</div></div>`;
+    return;
+  }
+
+  const who = S.who || "还没写受众（建议补上）";
+  ttl.textContent = `把「${obj}」的${S.mech}，改成${S.cur}装置`;
+
+  body.innerHTML = `
+    <div class="row3"><div class="k">分子</div><div class="v"><b>${S.mech}</b>　保留，一分不改</div></div>
+    <div class="row3"><div class="k">被删掉的<br>决策点</div><div class="v">「${m.del}」</div></div>
+    <div class="row3"><div class="k">分母</div><div class="v">平台获益 → <b>${S.cur}</b></div></div>
+    <div class="row3"><div class="k">给谁用</div><div class="v">${who}</div></div>
+    <div class="pitch">「我们不动${S.mech}这套机制，只把它的收款方换掉：从平台，换成你的${S.cur}。」</div>
+    <div class="row3"><div class="k">三条<br>落地检查</div><div class="v">
+      <ol class="checks">
+        <li>${m.law}。</li>
+        <li>奖励必须在 30 秒内可见，做不到就没人来第二次。</li>
+        <li>写清楚「这条不适合谁」，并且真的把它显示在界面上。</li>
+      </ol>
+    </div></div>
+    <div class="row3"><div class="k">风险</div><div class="v" style="color:#FF8B7E">${m.risk}。</div></div>
+  `;
+}
+
+function randomize(){
+  S.obj = OBJS[Math.floor(Math.random()*OBJS.length)];
+  S.mech = Object.keys(MECHS)[Math.floor(Math.random()*5)];
+  S.cur = CURS[Math.floor(Math.random()*CURS.length)];
+  S.who = "";
+  document.getElementById("objCustom").value = "";
+  document.getElementById("who").value = "";
+  chips(document.getElementById("obj"), OBJS, "obj");
+  chips(document.getElementById("mech"), Object.keys(MECHS), "mech");
+  chips(document.getElementById("cur"), CURS, "cur");
+  render();
+}
+
+function reset(){
+  S.obj = S.mech = S.cur = S.who = "";
+  document.getElementById("objCustom").value = "";
+  document.getElementById("who").value = "";
+  chips(document.getElementById("obj"), OBJS, "obj");
+  chips(document.getElementById("mech"), Object.keys(MECHS), "mech");
+  chips(document.getElementById("cur"), CURS, "cur");
+  render();
+}
+
+function cardText(){
+  const obj = document.getElementById("objCustom").value.trim() || S.obj;
+  const who = S.who || "（未填写受众）";
+  const m = MECHS[S.mech];
+  return [
+    "【逆向设计卡】",
+    "对象：" + obj,
+    "保留机制：" + S.mech + "（分子不改）",
+    "被删掉的决策点：「" + m.del + "」",
+    "货币替换：平台获益 → " + S.cur,
+    "受众：" + who,
+    "设计律：" + m.law,
+    "风险：" + m.risk,
+    "",
+    "—— 反编译实验室 · 分子一模一样，只换分母"
+  ].join("\n");
+}
+
+function copyCard(){
+  const t = cardText();
+  navigator.clipboard.writeText(t).then(() => alert("已复制。\n\n" + t), () => alert(t));
+}
+
+function downloadCard(){
+  const blob = new Blob([cardText()], {type:"text/plain;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "逆向设计卡.txt";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+document.getElementById("objCustom").addEventListener("input", () => {
+  S.obj = "";
+  chips(document.getElementById("obj"), OBJS, "obj");
+  render();
+});
+document.getElementById("who").addEventListener("input", e => {
+  S.who = e.target.value.trim();
+  render();
+});
+
+chips(document.getElementById("obj"), OBJS, "obj");
+chips(document.getElementById("mech"), Object.keys(MECHS), "mech");
+chips(document.getElementById("cur"), CURS, "cur");
+render();
+</script>
+<script src="assets/explore.js"></script>
+</body>
+</html>

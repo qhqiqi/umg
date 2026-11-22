@@ -353,6 +353,23 @@ textarea:focus{border-color:rgba(184,255,60,.4)}
   font:inherit;font-size:12.5px;padding:10px 12px;outline:none;font-family:var(--mono)}
 .field input:focus{border-color:rgba(184,255,60,.4)}
 
+
+/* ---------- concept film ---------- */
+.film{position:relative;border:1px solid var(--line2);border-radius:18px;overflow:hidden;background:#05060A;margin:8px 0 4px}
+.film video{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;background:#05060A}
+.film .play{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  cursor:pointer;background:radial-gradient(circle at 50% 50%,rgba(5,6,10,.15),rgba(5,6,10,.55));transition:.25s;
+}
+.film .play:hover{background:radial-gradient(circle at 50% 50%,rgba(5,6,10,.05),rgba(5,6,10,.45))}
+.film .play b{
+  width:74px;height:74px;border-radius:50%;display:grid;place-items:center;font-size:22px;color:#0A0C08;
+  background:radial-gradient(circle at 50% 36%,#E2FF9E,#B8FF3C 44%,#84C617 76%,#4E7A05);
+  box-shadow:0 10px 30px rgba(184,255,60,.25),inset 0 2px 6px rgba(255,255,255,.7);
+}
+.film .play em{font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:rgba(255,255,255,.7)}
+.film.playing .play{display:none}
+
 /* ---------- arcade key ---------- */
 .arcade{position:fixed;right:30px;bottom:30px;z-index:70;display:flex;flex-direction:column;align-items:center;gap:10px}
 @media(max-width:760px){.arcade{right:16px;bottom:16px;transform:scale(.86);transform-origin:bottom right}}
@@ -406,7 +423,7 @@ footer{margin-top:70px;border-top:1px solid var(--line);padding-top:24px;display
 footer .f{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--dim2);line-height:2}
 </style>
 </head>
-<body>
+<body data-page="lab">
 <div class="wrap">
 
   <header class="top">
@@ -421,6 +438,8 @@ footer .f{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(-
       <a href="method.html">方法</a>
       <a href="devices/">装置库</a>
       <a href="archive/">档案</a>
+      <a href="quiz.html">测验</a>
+      <a href="workbench.html">工作台</a>
       <a href="case.html">案例</a>
       <a href="sound.html">声音</a>
       <a href="about.html">关于</a>
@@ -486,6 +505,18 @@ footer .f{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(-
         五个装置分别对应五种被劫持的机制——斯金纳箱、FOMO、悬念、损失厌恶、完成强迫——
         我们保留它们的全部心理威力，只把收款方从平台改成用户本人。
       </p>
+    </div>
+  </div>
+
+  <div class="sec-head reveal">
+    <span class="no">00.5</span><h2>概念片 · 5 秒</h2>
+    <span class="hint">generated video · 点击播放</span>
+  </div>
+
+  <div class="film reveal" id="film">
+    <video id="filmVideo" src="assets/video/hero.mp4" poster="assets/img/method_anatomy.jpg" preload="none" muted loop playsinline></video>
+    <div class="play" onclick="playFilm()">
+      <b>▶</b><em>DECOMPILE · 5s</em>
     </div>
   </div>
 
@@ -923,6 +954,15 @@ function go(id, forcedDir){
   if(first){ VIEWS[id].render(); AudioKit.ambient(id); updateArcade(); }
   else swapStage(()=>{ VIEWS[id].render(); AudioKit.ambient(id); updateArcade(); }, dir);
   document.getElementById("stage").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+
+function playFilm(){
+  const f = document.getElementById('film'), v = document.getElementById('filmVideo');
+  if(!v) return;
+  f.classList.add('playing');
+  v.preload = 'auto';
+  v.play().catch(()=>{ f.classList.remove('playing'); flash('浏览器拦截了自动播放，请再点一次'); });
 }
 
 /* ---------- 街机实体键：一个键，做当前该做的事 ---------- */
@@ -1644,5 +1684,6 @@ setInterval(updateArcade, 700);
 M1.tasks.forEach(t=>{ const i=new Image(); i.src = IMG+t.img; });
 ["m2_anxious","m2_tired","m2_calm","m3_act1","m3_act2","m3_act3","m4_honor","m4_decay","m5_ideal"].forEach(n=>{ const i=new Image(); i.src=IMG+n+".jpg"; });
 </script>
+<script src="assets/explore.js"></script>
 </body>
 </html>
