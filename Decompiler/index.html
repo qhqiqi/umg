@@ -352,6 +352,19 @@ textarea:focus{border-color:rgba(184,255,60,.4)}
 .field input{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:9px;color:var(--ink);
   font:inherit;font-size:12.5px;padding:10px 12px;outline:none;font-family:var(--mono)}
 .field input:focus{border-color:rgba(184,255,60,.4)}
+.modegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:4px 0 16px}
+.modec{border:1px solid var(--line2);background:transparent;border-radius:12px;padding:11px 10px;cursor:pointer;
+  color:var(--dim);font:inherit;text-align:left;transition:.16s}
+.modec b{display:block;font-size:12.5px;color:var(--ink2);margin-bottom:4px;font-weight:600}
+.modec span{font-size:10px;line-height:1.5;display:block;font-family:var(--mono);letter-spacing:.02em}
+.modec:hover{border-color:#39404F}
+.modec.on{border-color:var(--lime);background:rgba(184,255,60,.08)}
+.modec.on b{color:var(--lime)}
+.hintbox{border:1px solid var(--line);border-left:2px solid var(--violet);border-radius:0 10px 10px 0;
+  padding:12px 14px;font-size:11.5px;line-height:1.75;color:#B9C0CD;background:rgba(123,97,255,.05);margin-bottom:14px}
+.hintbox b{color:var(--ink);font-weight:600}
+.apimsg{font-family:var(--mono);font-size:10.5px;line-height:1.8;color:var(--dim2);margin-top:12px;min-height:14px;word-break:break-all}
+.apimsg img{width:96px;border-radius:8px;margin-top:8px;display:block}
 
 
 /* ---------- concept film ---------- */
@@ -613,15 +626,32 @@ footer .f{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(-
 
 <div class="mask" id="mask" onclick="closeApi()"></div>
 <div class="modal" id="apiModal">
-  <h3>接入图像生成 API</h3>
-  <p>填写任意 OpenAI 兼容的图像生成端点（例如 AMD 提供的 `/v1/images/generations`）。配置只存在本地浏览器，不上传。未配置时，装置会使用预生成素材，交互逻辑完全一致。</p>
-  <div class="field"><label>Base URL</label><input id="fBase" placeholder="https://your-amd-endpoint/v1"></div>
-  <div class="field"><label>API Key</label><input id="fKey" placeholder="sk-..." type="password"></div>
-  <div class="field"><label>Model</label><input id="fModel" placeholder="image-model-name"></div>
-  <div class="row" style="margin-top:18px">
-    <button class="btn lime" onclick="saveApi()">保存并启用</button>
-    <button class="btn ghost" onclick="clearApi()">清除</button>
+  <h3>图像生成接入</h3>
+  <p>四种模式。<b>离线生成</b>与<b>免费直连</b>都不需要密钥，选中即用；<b>自建端点</b>适合接 AMD 或你自己的中转。配置只存在本地浏览器。</p>
+
+  <div class="modegrid" id="modeGrid">
+    <button class="modec" data-mode="local"><b>本地素材</b><span>内置 12 张<br>永远可用</span></button>
+    <button class="modec" data-mode="art"><b>离线生成</b><span>程序化绘制<br>每次不同</span></button>
+    <button class="modec" data-mode="free"><b>免费直连</b><span>无需密钥<br>可能被限流</span></button>
+    <button class="modec" data-mode="custom"><b>自建端点</b><span>OpenAI 兼容<br>AMD / 中转</span></button>
   </div>
+
+  <div id="customFields">
+    <div class="field"><label>Base URL</label><input id="fBase" placeholder="https://your-endpoint/v1"></div>
+    <div class="field"><label>API Key</label><input id="fKey" placeholder="sk-..." type="password"></div>
+    <div class="field"><label>Model</label><input id="fModel" placeholder="image-model-name"></div>
+  </div>
+
+  <div id="freeNote" class="hintbox" style="display:none">
+    走 <b>image.pollinations.ai</b> 的公共接口：浏览器直接请求，不需要密钥，一张约 5–20 秒。公共接口有配额，忙时会返回 402/503。
+    失败会自动回退到内置素材，装置不会卡住。
+  </div>
+
+  <div class="row" style="margin-top:16px">
+    <button class="btn lime" onclick="saveApi()">保存并启用</button>
+    <button class="btn ghost" onclick="testApi()">测试一次</button>
+  </div>
+  <div id="apiMsg" class="apimsg"></div>
 </div>
 
 <script>
@@ -637,7 +667,143 @@ const MODULES = [
   {id:"m5", no:"05", name:"认知清理器", en:"Cognitive Cleaner"},
 ];
 
-const API = {base:"", key:"", model:"", on:false};
+const API = {mode:"local", base:"", key:"", model:"", on:false};
+const FREE_BASE = "https://image.pollinations.ai/prompt/";
+
+function preloadImg(src, ms){
+  return new Promise(res => {
+    const im = new Image(); let done = false;
+    const finish = v => { if(!done){ done = true; clearTimeout(t); res(v); } };
+    const t = setTimeout(() => finish(false), ms || 25000);
+    im.onload = () => finish(true);
+    im.onerror = () => finish(false);
+    im.src = src;
+  });
+}
+function freeUrl(prompt, size, model){
+  return FREE_BASE + encodeURIComponent(prompt) +
+    `?width=${size}&height=${size}&nologo=true&model=${encodeURIComponent(model||"flux")}&seed=${Math.floor(Math.random()*1e6)}`;
+}
+
+/* ---------- 离线程序化生成：不依赖任何服务，每次都不一样 ---------- */
+function hashStr(s){
+  let h = 2166136261;
+  for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function mulberry(seed){
+  let a = seed >>> 0;
+  return function(){
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function makeArt(prompt, size){
+  const S = size || 1024;
+  const c = document.createElement("canvas");
+  c.width = c.height = S;
+  const x = c.getContext("2d");
+  const rnd = mulberry(hashStr(prompt + "|" + Date.now() + "|" + Math.random()));
+  const HUES = [85, 255, 190, 320, 45];
+  const hue = (HUES[Math.floor(rnd()*HUES.length)] + Math.floor(rnd()*24) - 12 + 360) % 360;
+
+  // 背景
+  const g = x.createRadialGradient(S*0.5, S*0.36, S*0.05, S*0.5, S*0.55, S*0.95);
+  g.addColorStop(0, "#141a24");
+  g.addColorStop(0.55, "#0b0e14");
+  g.addColorStop(1, "#05060a");
+  x.fillStyle = g; x.fillRect(0,0,S,S);
+
+  // 中央辉光
+  const glow = x.createRadialGradient(S*0.5, S*0.5, 0, S*0.5, S*0.5, S*0.42);
+  glow.addColorStop(0, `hsla(${hue}, 92%, 60%, 0.22)`);
+  glow.addColorStop(0.45, `hsla(${hue}, 92%, 55%, 0.07)`);
+  glow.addColorStop(1, "rgba(0,0,0,0)");
+  x.fillStyle = glow; x.fillRect(0,0,S,S);
+
+  // 内圈填充（在主体徽章处绘制）
+
+  // 汇聚细线
+  x.lineWidth = 1;
+  const cx = S*0.5, cy = S*0.5;
+  for(let i=0;i<70;i++){
+    const a = rnd()*Math.PI*2, r0 = S*(0.15+rnd()*0.55), r1 = S*(0.5+rnd()*0.5);
+    x.strokeStyle = `hsla(${hue + (rnd()*60-30)}, 90%, 62%, ${0.05 + rnd()*0.16})`;
+    x.beginPath();
+    x.moveTo(cx + Math.cos(a)*r0, cy + Math.sin(a)*r0);
+    x.lineTo(cx + Math.cos(a+0.02)*r1, cy + Math.sin(a+0.02)*r1);
+    x.stroke();
+  }
+
+  // 主体徽章：多层多边形
+  const sides = 5 + Math.floor(rnd()*4);
+  const rot = rnd()*Math.PI;
+
+  // 内圈填充
+  const fill = x.createLinearGradient(0, 0, S, S);
+  fill.addColorStop(0, `hsla(${hue}, 90%, 55%, 0.18)`);
+  fill.addColorStop(1, `hsla(${(hue+70)%360}, 90%, 55%, 0.05)`);
+  x.fillStyle = fill;
+  x.beginPath();
+  for(let k=0;k<=sides;k++){
+    const a = rot + k/sides*Math.PI*2;
+    const px = cx + Math.cos(a)*S*0.30, py = cy + Math.sin(a)*S*0.30;
+    k ? x.lineTo(px,py) : x.moveTo(px,py);
+  }
+  x.closePath(); x.fill();
+
+  const stroke = x.createLinearGradient(0, 0, S, S);
+  stroke.addColorStop(0, `hsl(${hue}, 92%, 66%)`);
+  stroke.addColorStop(1, `hsl(${(hue+80)%360}, 88%, 62%)`);
+  x.strokeStyle = stroke;
+  x.shadowColor = stroke; x.shadowBlur = S*0.03;
+
+  [0.30, 0.225, 0.155, 0.095].forEach((r, i) => {
+    x.globalAlpha = 0.95 - i*0.16;
+    x.lineWidth = S * (0.0035 - i*0.0006);
+    x.beginPath();
+    for(let k=0;k<=sides;k++){
+      const a = rot + k/sides*Math.PI*2;
+      const px = cx + Math.cos(a)*S*r, py = cy + Math.sin(a)*S*r;
+      k ? x.lineTo(px,py) : x.moveTo(px,py);
+    }
+    x.closePath(); x.stroke();
+  });
+
+  // 内部星形
+  x.globalAlpha = 0.9; x.lineWidth = S*0.0022;
+  x.beginPath();
+  for(let k=0;k<sides;k++){
+    const a1 = rot + k/sides*Math.PI*2, a2 = rot + (k+0.5)/sides*Math.PI*2;
+    const px = cx + Math.cos(a1)*S*0.30, py = cy + Math.sin(a1)*S*0.30;
+    const qx = cx + Math.cos(a2)*S*0.155, qy = cy + Math.sin(a2)*S*0.155;
+    k ? x.lineTo(px,py) : x.moveTo(px,py);
+    x.lineTo(qx,qy);
+  }
+  x.closePath(); x.stroke();
+
+  // 中心光点
+  x.shadowBlur = S*0.08;
+  x.globalAlpha = 0.9;
+  x.fillStyle = stroke;
+  x.beginPath(); x.arc(cx, cy, S*0.012, 0, Math.PI*2); x.fill();
+  x.shadowBlur = 0;
+
+  // 颗粒 + 暗角
+  x.globalAlpha = 1;
+  const vg = x.createRadialGradient(cx, cy, S*0.35, cx, cy, S*0.75);
+  vg.addColorStop(0, "rgba(0,0,0,0)");
+  vg.addColorStop(1, "rgba(0,0,0,0.72)");
+  x.fillStyle = vg; x.fillRect(0,0,S,S);
+  for(let i=0;i<2600;i++){
+    x.fillStyle = `rgba(255,255,255,${rnd()*0.05})`;
+    x.fillRect(rnd()*S, rnd()*S, 1, 1);
+  }
+  return c.toDataURL("image/jpeg", 0.88);
+}
 
 /* 生成日志 */
 const LOG = [];
@@ -662,21 +828,44 @@ function renderGallery(){
 function loadApi(){
   try{
     const raw = localStorage.getItem("dopamine_api");
-    if(raw){ const o = JSON.parse(raw); API.base=o.base||""; API.key=o.key||""; API.model=o.model||""; }
+    if(raw){
+      const o = JSON.parse(raw);
+      API.mode = o.mode || ((o.base && o.model) ? "custom" : "local");
+      API.base = o.base || ""; API.key = o.key || ""; API.model = o.model || "";
+    }
   }catch(e){}
-  API.on = !!(API.base && API.model);
+  API.on = (API.mode === "art") || (API.mode === "free") || (API.mode === "custom" && !!(API.base && API.model));
   syncApiUI();
 }
 function syncApiUI(){
   const p = document.getElementById("apiPill"), t = document.getElementById("apiPillText");
   const ft = document.getElementById("footTag");
-  if(API.on){ p.classList.add("live"); t.textContent = "LIVE · " + API.model; ft.textContent = "LIVE IMAGE API"; ft.className="tag lime"; }
-  else { p.classList.remove("live"); t.textContent = "LOCAL ASSETS"; ft.textContent="LOCAL FALLBACK"; ft.className="tag"; }
+  if(API.mode === "art"){
+    p.classList.add("live"); t.textContent = "OFFLINE · GENERATIVE";
+    ft.textContent = "OFFLINE GENERATIVE"; ft.className = "tag lime";
+  } else if(API.mode === "free"){
+    p.classList.add("live"); t.textContent = "FREE · POLLINATIONS";
+    ft.textContent = "FREE IMAGE API"; ft.className = "tag lime";
+  } else if(API.mode === "custom" && API.base && API.model){
+    p.classList.add("live"); t.textContent = "LIVE · " + API.model;
+    ft.textContent = "LIVE IMAGE API"; ft.className = "tag lime";
+  } else {
+    p.classList.remove("live"); t.textContent = "LOCAL ASSETS";
+    ft.textContent = "LOCAL FALLBACK"; ft.className = "tag";
+  }
+}
+function paintMode(){
+  document.querySelectorAll(".modec").forEach(b => b.classList.toggle("on", b.dataset.mode === API.mode));
+  const cf = document.getElementById("customFields"), fn = document.getElementById("freeNote");
+  if(cf) cf.style.display = API.mode === "custom" ? "" : "none";
+  if(fn) fn.style.display = API.mode === "free" ? "" : "none";
 }
 function openApi(){
   document.getElementById("fBase").value = API.base;
   document.getElementById("fKey").value = API.key;
   document.getElementById("fModel").value = API.model;
+  const m = document.getElementById("apiMsg"); if(m) m.innerHTML = "";
+  paintMode();
   document.getElementById("mask").classList.add("on");
   document.getElementById("apiModal").classList.add("on");
 }
@@ -684,45 +873,105 @@ function closeApi(){
   document.getElementById("mask").classList.remove("on");
   document.getElementById("apiModal").classList.remove("on");
 }
+document.addEventListener("click", e => {
+  const b = e.target.closest(".modec");
+  if(!b) return;
+  API.mode = b.dataset.mode;
+  paintMode();
+});
 function saveApi(){
   API.base = document.getElementById("fBase").value.trim().replace(/\/$/,"");
   API.key  = document.getElementById("fKey").value.trim();
   API.model= document.getElementById("fModel").value.trim();
-  localStorage.setItem("dopamine_api", JSON.stringify({base:API.base,key:API.key,model:API.model}));
-  API.on = !!(API.base && API.model);
+  localStorage.setItem("dopamine_api", JSON.stringify({
+    mode: API.mode, base: API.base, key: API.key, model: API.model
+  }));
+  API.on = (API.mode === "art") || (API.mode === "free") || (API.mode === "custom" && !!(API.base && API.model));
   syncApiUI(); closeApi();
-}
-function clearApi(){
-  localStorage.removeItem("dopamine_api");
-  API.base=API.key=API.model=""; API.on=false;
-  syncApiUI(); closeApi();
+  if(API.mode === "free") flash("已切到免费直连 · 下次生成会实时出图");
+  else if(API.mode === "custom" && !API.on) flash("端点没填全，先按本地素材跑");
+  else if(API.mode === "local") flash("已切回本地素材");
 }
 
-/* 生成一张图：返回 dataURL 或本地素材 URL；同时写入生成日志 */
+/* 自建端点（OpenAI 兼容） */
+async function customGen(prompt, size){
+  const res = await fetch(API.base + "/images/generations", {
+    method:"POST",
+    headers:{"Content-Type":"application/json", ...(API.key ? {"Authorization":"Bearer "+API.key} : {})},
+    body: JSON.stringify({model:API.model, prompt, n:1, size:size||"1024x1024", response_format:"b64_json"})
+  });
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  const j = await res.json();
+  const b64 = j?.data?.[0]?.b64_json, url = j?.data?.[0]?.url;
+  if(b64) return "data:image/png;base64," + b64;
+  if(url) return url;
+  throw new Error("empty payload");
+}
+
+/* 测试一次 */
+async function testApi(){
+  const msg = document.getElementById("apiMsg");
+  msg.innerHTML = "生成中…";
+  const p = "极简深色抽象背景，青柠绿发光几何体，暗调，极简，无文字";
+  const t0 = Date.now();
+  let src = null, err = "";
+  try{
+    if(API.mode === "art"){
+      src = makeArt(p, 512);
+    } else if(API.mode === "free"){
+      const u = freeUrl(p, 512, API.model);
+      src = (await preloadImg(u, 32000)) ? u : null;
+      if(!src) err = "超时或被限流";
+    } else if(API.mode === "custom" && API.base && API.model){
+      src = await customGen(p, "1024x1024");
+    } else {
+      src = IMG + "m1_plank.jpg";
+      err = "本地素材（未接入真实生成）";
+    }
+  } catch(e){ err = e.message; }
+  const dt = ((Date.now() - t0)/1000).toFixed(1);
+  if(src){
+    msg.innerHTML = "成功 · " + dt + "s · " + API.mode + (err ? " · " + err : "");
+    const im = new Image(); im.src = src; msg.appendChild(im);
+  } else {
+    msg.textContent = "失败 · " + dt + "s · " + (err || "未知原因") + " · 已回退到本地素材";
+  }
+}
+
+/* 生成一张图：免费直连 / 自建端点 / 本地素材 */
 async function generate(prompt, fallback, opts={}){
   const t0 = Date.now();
-  if(API.on){
+
+  if(API.mode === "art"){
+    await new Promise(r=>setTimeout(r, 520));
+    const src = makeArt(prompt, 1024);
+    logGen(src, "OFFLINE · " + prompt.slice(0, 40));
+    return src;
+  }
+
+  if(API.mode === "free"){
+    const u = freeUrl(prompt, 768, API.model);
+    if(await preloadImg(u, 30000)){
+      logGen(u, "FREE · " + prompt.slice(0, 40));
+      return u;
+    }
+    console.warn("[api] pollinations 超时，回退本地素材");
+  }
+
+  if(API.mode === "custom" && API.base && API.model){
     try{
-      const res = await fetch(API.base + "/images/generations", {
-        method:"POST",
-        headers:{"Content-Type":"application/json", ...(API.key?{"Authorization":"Bearer "+API.key}:{})},
-        body: JSON.stringify({model:API.model, prompt, n:1, size:opts.size||"1024x1024", response_format:"b64_json"})
-      });
-      if(!res.ok) throw new Error("HTTP "+res.status);
-      const j = await res.json();
-      const b64 = j?.data?.[0]?.b64_json;
-      const url = j?.data?.[0]?.url;
-      const src = b64 ? ("data:image/png;base64,"+b64) : url;
-      if(src){ logGen(src, "LIVE · "+prompt.slice(0,44)); return src; }
-      throw new Error("empty payload");
+      const src = await customGen(prompt, opts.size);
+      logGen(src, "LIVE · " + prompt.slice(0, 44));
+      return src;
     }catch(e){
-      console.warn("[api] fallback:", e.message);
+      console.warn("[api] custom 失败:", e.message);
     }
   }
+
   // 本地素材：保留 700–1100ms 的"生成"节奏，让装置的手感一致
   const wait = Math.max(0, 700 + Math.random()*400 - (Date.now()-t0));
   await new Promise(r=>setTimeout(r, wait));
-  logGen(fallback, "LOCAL · "+prompt.slice(0,44));
+  logGen(fallback, "LOCAL · " + prompt.slice(0,44));
   return fallback;
 }
 
