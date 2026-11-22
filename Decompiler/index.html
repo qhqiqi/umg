@@ -642,6 +642,12 @@ footer .f{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(-
     <div class="field"><label>Model</label><input id="fModel" placeholder="image-model-name"></div>
   </div>
 
+  <div id="proxyNote" class="hintbox" style="display:none">
+    浏览器直连第三方接口会被 CORS 拦住。本地演示可以先跑中转：
+    <code>node tools/amd-proxy.js</code>，Base URL 填 <code>http://127.0.0.1:8787/v1</code>，Key 随便填（真正的 key 在服务端）。
+    线上要可用，得把中转部署到公网。
+  </div>
+
   <div id="freeNote" class="hintbox" style="display:none">
     走 <b>image.pollinations.ai</b> 的公共接口：浏览器直接请求，不需要密钥，一张约 5–20 秒。公共接口有配额，忙时会返回 402/503。
     失败会自动回退到内置素材，装置不会卡住。
@@ -859,6 +865,8 @@ function paintMode(){
   const cf = document.getElementById("customFields"), fn = document.getElementById("freeNote");
   if(cf) cf.style.display = API.mode === "custom" ? "" : "none";
   if(fn) fn.style.display = API.mode === "free" ? "" : "none";
+  const pn = document.getElementById("proxyNote");
+  if(pn) pn.style.display = API.mode === "custom" ? "" : "none";
 }
 function openApi(){
   document.getElementById("fBase").value = API.base;
